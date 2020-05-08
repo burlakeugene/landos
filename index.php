@@ -8,12 +8,6 @@
  * Author URI: https://burlakeugene.github.io
  */
 
-function my_get_template_part($template, $data = array()){
-  extract($data);
-  require locate_template($template . '.php');
-}
-
-
 // admin page
 add_action('admin_menu', 'landos_admin_menu');
 function landos_admin_menu(){
@@ -33,9 +27,9 @@ function landos_item(){
 
 //styles and scripts
 function landos_styles_scripts($hook) {
-  wp_register_style('landos', plugins_url('landos/media/styles/styles.css'));
+  wp_register_style('landos', plugins_url('landos/frontend/dist/css/bundle.css'));
   wp_enqueue_style('landos');
-  wp_enqueue_script('landos', plugins_url('media/scripts/scripts.js', __FILE__ ), array('jquery'));
+  wp_enqueue_script('landos', plugins_url('frontend/dist/js/bundle.js', __FILE__ ), array('jquery'));
 }
 add_action( 'admin_enqueue_scripts', 'landos_styles_scripts' );
 
@@ -116,4 +110,9 @@ function get_landing(){
 	$landing = $wpdb->get_results("SELECT * FROM $table WHERE id=$id");
 	$landing = $landing[0];
 	return $landing;
+}
+
+function my_get_template_part($template, $data = array()){
+  extract($data);
+  require locate_template($template . '.php');
 }
