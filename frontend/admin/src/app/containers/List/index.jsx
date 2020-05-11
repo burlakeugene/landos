@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import Item from 'containers/Item';
 import { getItems } from 'actions/Items';
-import Preloader from 'components/Preloader';
 import { loaderOff, loaderOn, messagePush } from 'actions/Status';
 class List extends Component {
   constructor(props) {
