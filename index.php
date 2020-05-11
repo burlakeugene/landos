@@ -11,25 +11,24 @@
 // admin page
 add_action('admin_menu', 'landos_admin_menu');
 function landos_admin_menu(){
-	add_menu_page( 'Landos list', 'Landos', 'manage_options', 'landos-list', 'landos_list',  'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE4LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPg0KPCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjEvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkIj4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDQ4My4wMTMgNDgzLjAxMyIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNDgzLjAxMyA0ODMuMDEzOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+DQo8cGF0aCBkPSJNNDc3LjA0MywyMTkuMjA1TDM3OC41NzUsNDguNjc3Yy03Ljk3NC0xMy44MDItMjIuNjgzLTIyLjI5Mi0zOC42MDctMjIuMjkySDE0My4wNDFjLTE1LjkyMywwLTMwLjYyOCw4LjQ5LTM4LjYwOCwyMi4yOTINCglMNS45NzEsMjE5LjIwNWMtNy45NjEsMTMuODAxLTcuOTYxLDMwLjc4NSwwLDQ0LjU4OGw5OC40NjIsMTcwLjU0M2M3Ljk4LDEzLjgwMiwyMi42ODUsMjIuMjkzLDM4LjYwOCwyMi4yOTNoMTk2LjkyNg0KCWMxNS45MjUsMCwzMC42MzQtOC40OTEsMzguNjA3LTIyLjI5M2w5OC40NjktMTcwLjU0M0M0ODUuMDAzLDI0OS45OSw0ODUuMDAzLDIzMy4wMDYsNDc3LjA0MywyMTkuMjA1eiIvPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPC9zdmc+DQo=');
-	add_submenu_page( null, 'Landos Add', 'Add', 'manage_options', 'landos-item', 'landos_item' );
+	add_menu_page( 'Landos list', 'Landos', 'manage_options', 'landos', 'landos',  'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE4LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPg0KPCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjEvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkIj4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDQ4My4wMTMgNDgzLjAxMyIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNDgzLjAxMyA0ODMuMDEzOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+DQo8cGF0aCBkPSJNNDc3LjA0MywyMTkuMjA1TDM3OC41NzUsNDguNjc3Yy03Ljk3NC0xMy44MDItMjIuNjgzLTIyLjI5Mi0zOC42MDctMjIuMjkySDE0My4wNDFjLTE1LjkyMywwLTMwLjYyOCw4LjQ5LTM4LjYwOCwyMi4yOTINCglMNS45NzEsMjE5LjIwNWMtNy45NjEsMTMuODAxLTcuOTYxLDMwLjc4NSwwLDQ0LjU4OGw5OC40NjIsMTcwLjU0M2M3Ljk4LDEzLjgwMiwyMi42ODUsMjIuMjkzLDM4LjYwOCwyMi4yOTNoMTk2LjkyNg0KCWMxNS45MjUsMCwzMC42MzQtOC40OTEsMzguNjA3LTIyLjI5M2w5OC40NjktMTcwLjU0M0M0ODUuMDAzLDI0OS45OSw0ODUuMDAzLDIzMy4wMDYsNDc3LjA0MywyMTkuMjA1eiIvPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPC9zdmc+DQo=');
 }
 
-function landos_list(){
-	$file = plugin_dir_path( __FILE__ ) . "includes/list.php";
+function landos(){
+	$file = plugin_dir_path( __FILE__ ) . "includes/admin.php";
 	if(file_exists($file)) require $file;
 }
 
-function landos_item(){
-	$file = plugin_dir_path( __FILE__ ) . "includes/item.php";
-	if(file_exists($file)) require $file;
-}
+// function landos_item(){
+// 	$file = plugin_dir_path( __FILE__ ) . "includes/item.php";
+// 	if(file_exists($file)) require $file;
+// }
 
 //styles and scripts
 function landos_styles_scripts($hook) {
-  wp_register_style('landos', plugins_url('landos/frontend/dist/css/bundle.css'));
+  wp_register_style('landos', plugins_url('frontend/admin/dist/bundle.css'));
   wp_enqueue_style('landos');
-  wp_enqueue_script('landos', plugins_url('frontend/dist/js/bundle.js', __FILE__ ), array('jquery'));
+	wp_enqueue_script('landos', plugins_url('landos/frontend/admin/dist/bundle.js'), null, null, true);
 }
 add_action( 'admin_enqueue_scripts', 'landos_styles_scripts' );
 
@@ -57,7 +56,7 @@ function landos_create_db() {
 add_action('add_meta_boxes', 'landos_box');
 function landos_box(){
 	$screens = array( 'post', 'page' );
-	add_meta_box( 'landos', 'Landos', 'landos_box_callback', $screens, 'side');
+	add_meta_box( 'landos-box', 'Landos', 'landos_box_callback', $screens, 'side');
 }
 
 function landos_box_callback( $post, $meta ){
@@ -115,4 +114,17 @@ function get_landing(){
 function my_get_template_part($template, $data = array()){
   extract($data);
   require locate_template($template . '.php');
+}
+add_action( 'rest_api_init', function () {
+	register_rest_route( 'landos', '/items', array(
+		'methods' => 'GET',
+		'callback' => 'get_items',
+	));
+});
+
+function get_items(){
+	global $wpdb;
+	$table = $wpdb->prefix . 'landos';
+	$landing = $wpdb->get_results("SELECT * FROM $table");
+	return $landing;
 }

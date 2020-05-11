@@ -1,5 +1,7 @@
 export default {
-  preloader: {
+  status: {
     visible: false,
+    type: '',
+    message: ''
   },
 };

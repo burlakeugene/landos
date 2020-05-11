@@ -1,0 +1,100 @@
+.landos-status {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s;
+  z-index: 9999;
+  background-color: #fff;
+  border-radius: 20px;
+  &-message {
+    padding: 10px 10px 10px 40px;
+    font-size: 16px;
+    &__visible {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+  &-icon {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 50%;
+    margin-top: -15px;
+    left: 5px;
+    transform: scale(0);
+    visibility: hidden;
+    opacity: 0;
+    transition: all 0.3s;
+    svg {
+      width: 100%;
+      height: auto;
+      fill: #0088cc;
+    }
+    &__loading {
+      svg {
+        fill: transparent;
+        stroke: #01ea71;
+        stroke-width: 10px;
+        animation: rotate linear 0.6s infinite;
+      }
+    }
+    &__success {
+      svg {
+        fill: #01ea71;
+      }
+    }
+    &__error {
+      svg {
+        fill: #ff5657;
+      }
+    }
+  }
+  &__loading {
+    width: 38px;
+    height: 38px;
+    .landos-status-icon__loading {
+      transform: scale(1) translate(-50%, -50%);
+      opacity: 1;
+      visibility: visible;
+      left: 50%;
+      top: 50%;
+      margin-top: 0;
+    }
+  }
+  &__success {
+    .landos-status-icon__success {
+      transform: scale(1);
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+  &__error {
+    .landos-status-icon__error {
+      transform: scale(1);
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+  &__info {
+    .landos-status-icon__info {
+      transform: scale(1);
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+  &__visible {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

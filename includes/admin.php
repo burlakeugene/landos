@@ -1,0 +1,1 @@
+<div id="landos" data-url="<?= get_site_url() ?>"></div>
