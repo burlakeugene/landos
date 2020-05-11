@@ -1,22 +1,10 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import './styles/styles.scss';
+
 class Preloader extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      visible: props.visible || false,
-    };
-  }
-  static getDerivedStateFromProps(nextProps, prevState) {
-    console.log(nextProps);
-    if (nextProps.visible !== prevState.visible) {
-      return {
-        visible: nextProps.visible,
-      };
-    }
-  }
   render() {
-    let { visible } = this.state;
+    let { visible } = this.props;
     return (
       <div
         className={[
@@ -29,5 +17,11 @@ class Preloader extends Component {
     );
   }
 }
+
+Preloader = connect((state) => {
+  return {
+    visible: state.appReducer.preloader.visible || false,
+  };
+})(Preloader);
 
 export default Preloader;

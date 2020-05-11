@@ -5,12 +5,13 @@ import history from 'core/history';
 import Index from 'pages/Index';
 import Prealoader from 'components/Preloader';
 import './styles.scss';
+
 class App extends Component {
   render() {
     return (
       <div className="landos">
         <div className="landos-inner">
-          <Prealoader visible={true} />
+          <Prealoader />
           <Router history={history}>
             <Switch>
               <Route exact path="/" component={Index} />
