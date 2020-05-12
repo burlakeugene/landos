@@ -1,18 +1,12 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import { loaderOff, loaderOn, messagePush } from 'actions/Status';
 
 class Item extends Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      item: props.item
-    }
-  }
   render() {
-    let {item} = this.state;
     return (
       <div>
-        {item.title}
+        Item <Link to={'/'}>index</Link>
       </div>
     );
   }

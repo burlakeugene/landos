@@ -87,7 +87,6 @@ S274.821,124.122,256,124.122z"
   }
   render() {
     let { visible, message, type } = this.state;
-    console.log(message);
     return (
       <div
         className={[
