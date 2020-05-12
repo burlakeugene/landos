@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Landos
+ * Plugin Name: Spotter
  * Plugin URI: #
  * Description: Landing builder
  * Version: 1.0
@@ -9,36 +9,36 @@
  */
 
 // admin page
-add_action('admin_menu', 'landos_admin_menu');
-function landos_admin_menu(){
-	add_menu_page( 'Landos list', 'Landos', 'manage_options', 'landos', 'landos',  'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE4LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPg0KPCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjEvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkIj4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDQ4My4wMTMgNDgzLjAxMyIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNDgzLjAxMyA0ODMuMDEzOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+DQo8cGF0aCBkPSJNNDc3LjA0MywyMTkuMjA1TDM3OC41NzUsNDguNjc3Yy03Ljk3NC0xMy44MDItMjIuNjgzLTIyLjI5Mi0zOC42MDctMjIuMjkySDE0My4wNDFjLTE1LjkyMywwLTMwLjYyOCw4LjQ5LTM4LjYwOCwyMi4yOTINCglMNS45NzEsMjE5LjIwNWMtNy45NjEsMTMuODAxLTcuOTYxLDMwLjc4NSwwLDQ0LjU4OGw5OC40NjIsMTcwLjU0M2M3Ljk4LDEzLjgwMiwyMi42ODUsMjIuMjkzLDM4LjYwOCwyMi4yOTNoMTk2LjkyNg0KCWMxNS45MjUsMCwzMC42MzQtOC40OTEsMzguNjA3LTIyLjI5M2w5OC40NjktMTcwLjU0M0M0ODUuMDAzLDI0OS45OSw0ODUuMDAzLDIzMy4wMDYsNDc3LjA0MywyMTkuMjA1eiIvPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPC9zdmc+DQo=');
+add_action('admin_menu', 'spotter_admin_menu');
+function spotter_admin_menu(){
+	add_menu_page( 'spotter list', 'Spotter', 'manage_options', 'spotter', 'spotter',  'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE4LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPg0KPCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjEvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkIj4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDQ4My4wMTMgNDgzLjAxMyIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNDgzLjAxMyA0ODMuMDEzOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+DQo8cGF0aCBkPSJNNDc3LjA0MywyMTkuMjA1TDM3OC41NzUsNDguNjc3Yy03Ljk3NC0xMy44MDItMjIuNjgzLTIyLjI5Mi0zOC42MDctMjIuMjkySDE0My4wNDFjLTE1LjkyMywwLTMwLjYyOCw4LjQ5LTM4LjYwOCwyMi4yOTINCglMNS45NzEsMjE5LjIwNWMtNy45NjEsMTMuODAxLTcuOTYxLDMwLjc4NSwwLDQ0LjU4OGw5OC40NjIsMTcwLjU0M2M3Ljk4LDEzLjgwMiwyMi42ODUsMjIuMjkzLDM4LjYwOCwyMi4yOTNoMTk2LjkyNg0KCWMxNS45MjUsMCwzMC42MzQtOC40OTEsMzguNjA3LTIyLjI5M2w5OC40NjktMTcwLjU0M0M0ODUuMDAzLDI0OS45OSw0ODUuMDAzLDIzMy4wMDYsNDc3LjA0MywyMTkuMjA1eiIvPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPC9zdmc+DQo=');
 }
 
-function landos(){
+function spotter(){
 	$file = plugin_dir_path( __FILE__ ) . "includes/admin.php";
 	if(file_exists($file)) require $file;
 }
 
-// function landos_item(){
+// function spotter_item(){
 // 	$file = plugin_dir_path( __FILE__ ) . "includes/item.php";
 // 	if(file_exists($file)) require $file;
 // }
 
 //styles and scripts
-function landos_styles_scripts($hook) {
-  wp_register_style('landos', plugins_url('frontend/admin/dist/bundle.css'));
-  wp_enqueue_style('landos');
-	wp_enqueue_script('landos', plugins_url('landos/frontend/admin/dist/bundle.js'), null, null, true);
+function spotter_styles_scripts($hook) {
+  wp_register_style('spotter', plugins_url('frontend/admin/dist/bundle.css'));
+  wp_enqueue_style('spotter');
+	wp_enqueue_script('spotter', plugins_url('spotter/frontend/admin/dist/bundle.js'), null, null, true);
 }
-add_action( 'admin_enqueue_scripts', 'landos_styles_scripts' );
+add_action( 'admin_enqueue_scripts', 'spotter_styles_scripts' );
 
 
 //db
-register_activation_hook( __FILE__, 'landos_create_db' );
-function landos_create_db() {
+register_activation_hook( __FILE__, 'spotter_create_db' );
+function spotter_create_db() {
 	global $wpdb;
 	$charset_collate = $wpdb->get_charset_collate();
-	$table = $wpdb->prefix . 'landos';
+	$table = $wpdb->prefix . 'spotter';
 
 	$sql = "CREATE TABLE $table (
 		id mediumint(9) NOT NULL AUTO_INCREMENT,
@@ -53,20 +53,20 @@ function landos_create_db() {
 }
 
 //Page field
-add_action('add_meta_boxes', 'landos_box');
-function landos_box(){
+add_action('add_meta_boxes', 'spotter_box');
+function spotter_box(){
 	$screens = array( 'post', 'page' );
-	add_meta_box( 'landos-box', 'Landos', 'landos_box_callback', $screens, 'side');
+	add_meta_box( 'spotter-box', 'spotter', 'spotter_box_callback', $screens, 'side');
 }
 
-function landos_box_callback( $post, $meta ){
+function spotter_box_callback( $post, $meta ){
 	global $wpdb;
-	$table = $wpdb->prefix . 'landos';
+	$table = $wpdb->prefix . 'spotter';
 	$landings = $wpdb->get_results("SELECT * FROM $table");
 	wp_nonce_field( plugin_basename(__FILE__), 'myplugin_noncename' );
-	$value = get_post_meta( $post->ID, 'landos_id', 1 );
+	$value = get_post_meta( $post->ID, 'spotter_id', 1 );
 	echo '<label for="myplugin_new_field">Choose landing</label> ';
-	echo '<select name="landos_id">';
+	echo '<select name="spotter_id">';
 	echo '<option>None</option>';
 	foreach($landings as $landing){
 		echo '<option '.($landing->id == $value ? 'selected' : '').' value="'.$landing->id.'">'.$landing->title.'</option>';
@@ -74,9 +74,9 @@ function landos_box_callback( $post, $meta ){
 	echo '</select>';
 }
 
-add_action( 'save_post', 'landos_box_save' );
-function landos_box_save( $post_id ) {
-	if ( ! isset( $_POST['landos_id'] ) )
+add_action( 'save_post', 'spotter_box_save' );
+function spotter_box_save( $post_id ) {
+	if ( ! isset( $_POST['spotter_id'] ) )
 		return;
 	if ( ! wp_verify_nonce( $_POST['myplugin_noncename'], plugin_basename(__FILE__) ) )
 		return;
@@ -84,13 +84,13 @@ function landos_box_save( $post_id ) {
 		return;
 	if( ! current_user_can( 'edit_post', $post_id ) )
 		return;
-	$my_data = sanitize_text_field( $_POST['landos_id'] );
-	update_post_meta( $post_id, 'landos_id', $my_data );
+	$my_data = sanitize_text_field( $_POST['spotter_id'] );
+	update_post_meta( $post_id, 'spotter_id', $my_data );
 }
 
 //page hook
-add_filter('template_include', 'landos_load');
-function landos_load($origin) {
+add_filter('template_include', 'spotter_load');
+function spotter_load($origin) {
 	$landing = get_landing();
 	if($landing){
 		return plugin_dir_path(__FILE__).'/templates/index.php';
@@ -103,9 +103,9 @@ function landos_load($origin) {
 function get_landing(){
 	global $post;
 	global $wpdb;
-	$table = $wpdb->prefix . 'landos';
+	$table = $wpdb->prefix . 'spotter';
 	$id = $post->ID;
-	$id = get_metadata( 'post', $id, 'landos_id', true );
+	$id = get_metadata( 'post', $id, 'spotter_id', true );
 	$landing = $wpdb->get_results("SELECT * FROM $table WHERE id=$id");
 	$landing = $landing[0];
 	return $landing;
@@ -116,7 +116,7 @@ function my_get_template_part($template, $data = array()){
   require locate_template($template . '.php');
 }
 add_action( 'rest_api_init', function () {
-	register_rest_route( 'landos', '/items', array(
+	register_rest_route( 'spotter', '/items', array(
 		'methods' => 'GET',
 		'callback' => 'get_items',
 	));
@@ -124,7 +124,7 @@ add_action( 'rest_api_init', function () {
 
 function get_items(){
 	global $wpdb;
-	$table = $wpdb->prefix . 'landos';
+	$table = $wpdb->prefix . 'spotter';
 	$landing = $wpdb->get_results("SELECT * FROM $table");
 	return $landing;
 }

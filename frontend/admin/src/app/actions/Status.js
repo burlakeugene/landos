@@ -7,6 +7,8 @@ class Status {
     this.loaderOn = this.loaderOn.bind(this);
     this.loaderOff = this.loaderOff.bind(this);
     this.messagePush = this.messagePush.bind(this);
+    this.hideMessage = this.hideMessage.bind(this);
+    this.currentTimeout = false;
   }
   getCurrentState(prop) {
     let state = store.getState().statusReducer.status;
@@ -21,7 +23,13 @@ class Status {
   }
   loaderOff() {
     this.statusChange({
-      visible: false
+      visible: false,
+    });
+  }
+  hideMessage() {
+    clearTimeout(this.currentTimeout);
+    this.statusChange({
+      visible: false,
     });
   }
   messagePush(data) {
@@ -33,6 +41,7 @@ class Status {
     if (visible) return;
     let message = this.queue.shift();
     if (!message) return;
+    if (!message.type) message.type = 'info';
     this.statusChange({
       ...message,
       visible: true,
@@ -47,9 +56,9 @@ class Status {
     store.dispatch(action);
     this.checkForMessage();
     if (action.delay) {
-      setTimeout(() => {
+      this.currentTimeout = setTimeout(() => {
         this.statusChange({
-          visible: false
+          visible: false,
         });
       }, action.delay);
     }
@@ -61,4 +70,5 @@ Status = new Status();
 const loaderOn = Status.loaderOn;
 const loaderOff = Status.loaderOff;
 const messagePush = Status.messagePush;
-export { loaderOn, loaderOff, messagePush };
+const hideMessage = Status.hideMessage;
+export { loaderOn, loaderOff, messagePush, hideMessage };

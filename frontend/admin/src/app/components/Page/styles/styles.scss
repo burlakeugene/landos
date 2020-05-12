@@ -1,7 +1,10 @@
-.landos-page{
+.spotter-page{
   &-title,
   &-subtitle{
     margin: 0;
     margin-bottom: 15px;
+  }
+  &-buttons{
+    padding: 20px 0 0 0;
   }
 }

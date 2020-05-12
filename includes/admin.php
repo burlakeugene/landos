@@ -1,1 +1,1 @@
-<div id="landos" data-url="<?= get_site_url() ?>"></div>
+<div id="spotter" data-url="<?= get_site_url() ?>"></div>

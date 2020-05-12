@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import './styles/styles.scss';
+import { hideMessage } from 'actions/Status';
 
 class StatusPanel extends Component {
   constructor(props) {
@@ -89,17 +90,20 @@ S274.821,124.122,256,124.122z"
     let { visible, message, type } = this.state;
     return (
       <div
+        onClick={() => {
+          if(type !== 'loading') hideMessage();
+        }}
         className={[
-          'landos-status',
-          type ? 'landos-status__' + type : '',
-          visible ? 'landos-status__visible' : '',
+          'spotter-status',
+          type ? 'spotter-status__' + type : '',
+          visible ? 'spotter-status__visible' : '',
         ].join(' ')}
       >
         {['success', 'error', 'info', 'loading'].map((type, index) => (
           <div
             className={[
-              'landos-status-icon',
-              type ? 'landos-status-icon__' + type : '',
+              'spotter-status-icon',
+              type ? 'spotter-status-icon__' + type : '',
             ].join(' ')}
           >
             {this.getIcon(type)}
@@ -107,7 +111,7 @@ S274.821,124.122,256,124.122z"
         ))}
         <div
           className={[
-            'landos-status-message'
+            'spotter-status-message'
           ].join(' ')}
         >
           {message}

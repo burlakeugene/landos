@@ -10,8 +10,8 @@ import './styles.scss';
 class App extends Component {
   render() {
     return (
-      <div className="landos">
-        <div className="landos-inner">
+      <div className="spotter">
+        <div className="spotter-inner">
           <Router history={history}>
             <Switch>
               <Route exact path="/" component={Index} />

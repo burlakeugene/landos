@@ -1,4 +1,4 @@
-.landos-status {
+.spotter-status {
   position: fixed;
   bottom: 10px;
   right: 10px;
@@ -35,26 +35,26 @@
     &__loading {
       svg {
         fill: transparent;
-        stroke: #01ea71;
+        stroke: #27ca5d;
         stroke-width: 10px;
         animation: rotate linear 0.6s infinite;
       }
     }
     &__success {
       svg {
-        fill: #01ea71;
+        fill: #27ca5d;
       }
     }
     &__error {
       svg {
-        fill: #ff5657;
+        fill: #e74b43;
       }
     }
   }
   &__loading {
     width: 38px;
     height: 38px;
-    .landos-status-icon__loading {
+    .spotter-status-icon__loading {
       transform: scale(1) translate(-50%, -50%);
       opacity: 1;
       visibility: visible;
@@ -64,21 +64,21 @@
     }
   }
   &__success {
-    .landos-status-icon__success {
+    .spotter-status-icon__success {
       transform: scale(1);
       opacity: 1;
       visibility: visible;
     }
   }
   &__error {
-    .landos-status-icon__error {
+    .spotter-status-icon__error {
       transform: scale(1);
       opacity: 1;
       visibility: visible;
     }
   }
   &__info {
-    .landos-status-icon__info {
+    .spotter-status-icon__info {
       transform: scale(1);
       opacity: 1;
       visibility: visible;
