@@ -15,6 +15,7 @@ class Status {
     return prop ? state[prop] : state;
   }
   loaderOn() {
+    this.currentTimeout && clearTimeout(this.currentTimeout);
     this.statusChange({
       visible: true,
       type: 'loading',
@@ -22,12 +23,13 @@ class Status {
     });
   }
   loaderOff() {
+    this.currentTimeout && clearTimeout(this.currentTimeout);
     this.statusChange({
       visible: false,
     });
   }
   hideMessage() {
-    clearTimeout(this.currentTimeout);
+    this.currentTimeout && clearTimeout(this.currentTimeout);
     this.statusChange({
       visible: false,
     });
