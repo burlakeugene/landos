@@ -41,13 +41,13 @@ function spotter_create_db() {
 	$table = $wpdb->prefix . 'spotter';
 
 	$sql = "CREATE TABLE $table (
-		id mediumint(9) NOT NULL AUTO_INCREMENT,
-		time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-		title varchar(255) NOT NULL,
-		data longtext,
+		`id` mediumint(9) NOT NULL AUTO_INCREMENT,
+		`time` datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+		`title` varchar(255) NOT NULL,
+		`data` longtext,
+		`order` mediumint(11) NOT NULL DEFAULT 0,
 		UNIQUE KEY id (id)
 	) $charset_collate;";
-
 	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 	dbDelta( $sql );
 }
@@ -62,7 +62,7 @@ function spotter_box(){
 function spotter_box_callback( $post, $meta ){
 	global $wpdb;
 	$table = $wpdb->prefix . 'spotter';
-	$landings = $wpdb->get_results("SELECT * FROM $table");
+	$landings = $wpdb->get_results("SELECT * FROM $table ORDER BY `order` DESC");
 	wp_nonce_field( plugin_basename(__FILE__), 'myplugin_noncename' );
 	$value = get_post_meta( $post->ID, 'spotter_id', 1 );
 	echo '<label for="myplugin_new_field">Choose landing</label> ';
@@ -120,11 +120,92 @@ add_action( 'rest_api_init', function () {
 		'methods' => 'GET',
 		'callback' => 'get_items',
 	));
+	register_rest_route( 'spotter', '/item(?:/(?P<id>[a-zA-Z0-9-]+))?', array(
+		'methods' => 'GET',
+		'callback' => 'get_item',
+		'args' => array(
+			'id' => array(
+				'default' => 312
+			)
+		),
+	));
+	register_rest_route( 'spotter', '/item/add', array(
+		'methods' => 'POST',
+		'callback' => 'add_item'
+	));
+	register_rest_route( 'spotter', '/item/edit', array(
+		'methods' => 'POST',
+		'callback' => 'edit_item'
+	));
+	register_rest_route( 'spotter', '/item/remove', array(
+		'methods' => 'POST',
+		'callback' => 'remove_item'
+	));
 });
 
 function get_items(){
 	global $wpdb;
 	$table = $wpdb->prefix . 'spotter';
-	$landing = $wpdb->get_results("SELECT * FROM $table");
+	$landing = $wpdb->get_results("SELECT * FROM $table ORDER BY `order` DESC");
 	return $landing;
+}
+
+function get_item(WP_REST_Request $req){
+	global $wpdb;
+	$id = $req['id'];
+	$table = $wpdb->prefix . 'spotter';
+	$landing = $wpdb->get_results("SELECT * FROM $table WHERE id=$id");
+	if(count($landing)) {
+		$landing = $landing[0];
+		return $landing;
+	}
+	else{
+		return false;
+	}
+}
+
+function add_item(WP_REST_Request $req){
+	global $wpdb;
+	$table = $wpdb->prefix . 'spotter';
+	$item = $req['item'];
+	$item = json_encode($item);
+	$item = json_decode($item, true);
+	$item['time'] = date('Y-m-d H:i:s');
+	$landings = $wpdb->get_results("SELECT * FROM $table ORDER BY `order` DESC LIMIT 1");
+	if($landings[0]){
+		$order = intval($landings[0]->order);
+		$item['order'] = ++$order;
+	}
+	$result = $wpdb->insert($table, $item);
+	$response = rest_ensure_response($result);
+	$response->set_status($result ? 200 : 400);
+	$response->set_data($result ? 'Added success' : 'Error, can\'t add it');
+	return $response;
+}
+
+function edit_item(WP_REST_Request $req){
+	global $wpdb;
+	$table = $wpdb->prefix . 'spotter';
+	$item = $req['item'];
+	$item = json_encode($item);
+	$item = json_decode($item, true);
+	$item['time'] = date('Y-m-d H:i:s');
+	$result = $wpdb->update($table, $item, array(
+		'id' => $item['id']
+	));
+	$response = rest_ensure_response($result);
+	$response->set_status($result ? 200 : 400);
+	$response->set_data($result ? 'Edited success' : 'Error, can\'t edit it');
+	return $response;
+}
+
+function remove_item(WP_REST_Request $req){
+	global $wpdb;
+	$table = $wpdb->prefix . 'spotter';
+	$id = $req['id'];
+	$result = $wpdb->delete( $table, array( 'id' => $id ) );
+	$response = rest_ensure_response($result);
+	$response->set_status($result ? 200 : 400);
+	$response->set_data($result ? 'Removed success' : 'Error, can\'t remove it');
+	return $response;
 }

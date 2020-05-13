@@ -101,6 +101,7 @@ S274.821,124.122,256,124.122z"
       >
         {['success', 'error', 'info', 'loading'].map((type, index) => (
           <div
+            key={type}
             className={[
               'spotter-status-icon',
               type ? 'spotter-status-icon__' + type : '',

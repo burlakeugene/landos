@@ -10,9 +10,24 @@
   transition: all 0.3s;
   margin-right: 10px;
   vertical-align: middle;
+  border: none;
+  cursor: pointer;
+  &:focus{
+    color: #fff;
+    outline: none;
+    box-shadow: none;
+  }
   &:hover{
     transform: scale(1.04);
-    box-shadow: 0 10px 20px -15px #000;
+    &, &:focus{
+      box-shadow: 0 10px 20px -15px #000;
+    }
+  }
+  &:active{
+    &,&:focus,&:hover{
+      transform: scale(1);
+      box-shadow: none;
+    }
   }
   &__success{
     background-color: #27ca5d;
@@ -23,8 +38,5 @@
   &:hover{
     color: #fff;
   }
-  &:focus{
-    color: #fff;
-    outline: none;
-  }
+  
 }

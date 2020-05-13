@@ -4,13 +4,14 @@ import './styles/styles.scss';
 
 class Button extends Component {
   render() {
-    let { to, text, onClick, type = 'default' } = this.props;
+    let { to, text, onClick, type = 'default' } = this.props,
+      commonProps = {
+        className: ['spotter-button', 'spotter-button__' + type].join(' '),
+        onClick: onClick,
+      };
+    if (!to) return <button {...commonProps}>{text}</button>;
     return (
-      <Link
-        className={['spotter-button', 'spotter-button__' + type].join(' ')}
-        onClick={onClick}
-        to={to}
-      >
+      <Link {...commonProps} to={to}>
         {text}
       </Link>
     );

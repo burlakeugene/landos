@@ -5,6 +5,7 @@ import history from 'core/history';
 import Index from 'pages/Index';
 import Item from 'pages/Item';
 import Status from 'components/Status';
+import ModalRemove from 'components/ModalRemove';
 import './styles.scss';
 
 class App extends Component {
@@ -15,10 +16,11 @@ class App extends Component {
           <Router history={history}>
             <Switch>
               <Route exact path="/" component={Index} />
-              <Route exact path="/item"component={Item} />
+              <Route exact path="/item/:id?"component={Item} />
             </Switch>
           </Router>
           <Status />
+          <ModalRemove />
         </div>
       </div>
     );

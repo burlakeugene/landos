@@ -35,8 +35,10 @@ class Status {
     });
   }
   messagePush(data) {
-    this.queue.push(data);
-    this.checkForMessage();
+    setTimeout(() => {
+      this.queue.push(data);
+      this.checkForMessage();
+    }, 500);
   }
   checkForMessage() {
     let visible = this.getCurrentState('visible');
