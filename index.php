@@ -120,6 +120,10 @@ add_action( 'rest_api_init', function () {
 		'methods' => 'GET',
 		'callback' => 'get_items',
 	));
+	register_rest_route( 'spotter', '/items', array(
+		'methods' => 'POST',
+		'callback' => 'save_items'
+	));
 	register_rest_route( 'spotter', '/item(?:/(?P<id>[a-zA-Z0-9-]+))?', array(
 		'methods' => 'GET',
 		'callback' => 'get_item',
@@ -207,5 +211,26 @@ function remove_item(WP_REST_Request $req){
 	$response = rest_ensure_response($result);
 	$response->set_status($result ? 200 : 400);
 	$response->set_data($result ? 'Removed success' : 'Error, can\'t remove it');
+	return $response;
+}
+
+function save_items(WP_REST_Request $req){
+	global $wpdb;
+	$table = $wpdb->prefix . 'spotter';
+	$items = $req['items'];
+	$requests = [];
+	foreach($items as $item){
+		$requests[] = array(
+			'status' => $wpdb->update($table, array('order' => $item['order'], 'time' => date('Y-m-d H:i:s')), array('id' => $item['id'])),
+			'id' => $item['id']
+		);
+	}
+	$errors = [];
+	foreach($requests as $request){
+		if(!$request['status']) $errors[] = $request['id'];
+	}
+	$response = rest_ensure_response('');
+	$response->set_status(count($errors) ? 400 : 200);
+	$response->set_data(count($errors) ? 'Can\'t save' : 'Saved');
 	return $response;
 }

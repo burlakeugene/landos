@@ -126,3 +126,34 @@ export const removeItem = (id) => {
       });
   });
 };
+
+export const saveItems = (items) => {
+  loaderOn();
+  return new Promise((resolve, reject) => {
+    Request.post({
+      url: '/items',
+      data: {
+        items,
+      },
+    })
+      .then((message) => {
+        messagePush({
+          type: 'success',
+          message: message,
+          delay: 3000,
+        });
+        resolve(message);
+      })
+      .catch((error) => {
+        messagePush({
+          type: 'error',
+          message: error,
+          delay: 3000,
+        });
+        reject(error);
+      })
+      .finally(() => {
+        loaderOff();
+      });
+  });
+};

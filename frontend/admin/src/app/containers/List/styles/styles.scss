@@ -3,17 +3,6 @@
   position: relative;
   &-item {
     transition: all 0.3s;
-    &__dragged{
-      position: absolute;
-      transition: none;
-      top: 0;
-      left: 0;
-      width: 100%;
-      pointer-events: none;
-      .spotter-list-item-dragger{
-        cursor: grabbing;
-      }
-    }
     &-inner {
       position: relative;
       padding: 2px 0 2px 54px;

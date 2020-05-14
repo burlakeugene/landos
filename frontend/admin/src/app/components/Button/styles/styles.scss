@@ -12,7 +12,8 @@
   vertical-align: middle;
   border: none;
   cursor: pointer;
-  &:focus{
+  &:focus,
+  &:active{
     color: #fff;
     outline: none;
     box-shadow: none;
