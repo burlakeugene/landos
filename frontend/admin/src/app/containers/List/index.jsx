@@ -5,6 +5,7 @@ import Emitter from 'core/emitter';
 import { Draggable, DragDropContext, Droppable } from 'react-beautiful-dnd';
 import Button from 'components/Button';
 import { setRemovingItem } from 'actions/Items';
+import Transactions from 'components/Transactions';
 import './styles/styles.scss';
 
 class List extends Component {
@@ -61,6 +62,7 @@ class List extends Component {
     let { items } = this.state;
     return (
       <div className="spotter-list">
+        <Transactions />
         {items &&
           (items.length ? (
             <DragDropContext onDragEnd={this.onDragEnd}>
