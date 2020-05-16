@@ -6,6 +6,7 @@ import Index from 'pages/Index';
 import Item from 'pages/Item';
 import Status from 'components/Status';
 import ModalRemove from 'components/ModalRemove';
+import 'modules/helpers';
 import './styles.scss';
 
 class App extends Component {

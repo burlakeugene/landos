@@ -6,6 +6,8 @@ import { Draggable, DragDropContext, Droppable } from 'react-beautiful-dnd';
 import Button from 'components/Button';
 import { setRemovingItem } from 'actions/Items';
 import Transactions from 'components/Transactions';
+import Table from 'components/Table';
+import { historyPush } from 'actions/App';
 import './styles/styles.scss';
 
 class List extends Component {
@@ -15,8 +17,8 @@ class List extends Component {
       items: false,
     };
     this.getItems = this.getItems.bind(this);
-    this.onDragEnd = this.onDragEnd.bind(this);
     this.reOrder = this.reOrder.bind(this);
+    this.onDragEnd = this.onDragEnd.bind(this);
   }
   reOrder(list, startIndex, endIndex) {
     const result = Array.from(list);
@@ -27,20 +29,18 @@ class List extends Component {
     }
     return result;
   }
-  onDragEnd(result) {
-    if (!result.destination) {
-      return;
+  onDragEnd(items) {
+    for (let i = items.length - 1; i >= 0; i--) {
+      items[i].order = Math.abs(items.length - 1 - i);
     }
-    const items = this.reOrder(
-      this.state.items,
-      result.source.index,
-      result.destination.index
+    this.setState(
+      {
+        items,
+      },
+      () => {
+        saveItems(items);
+      }
     );
-    this.setState({
-      items,
-    }, () => {
-      saveItems(items);
-    });
   }
   getItems() {
     loaderOn();
@@ -61,59 +61,46 @@ class List extends Component {
   render() {
     let { items } = this.state;
     return (
-      <div className="spotter-list">
-        <Transactions />
-        {items &&
-          (items.length ? (
-            <DragDropContext onDragEnd={this.onDragEnd}>
-              <Droppable droppableId="droppable">
-                {(provided, snapshot) => (
-                  <div ref={provided.innerRef}>
-                    {items.map((item, index) => (
-                      <Draggable
-                        key={item.id}
-                        draggableId={item.id}
-                        index={index}
-                      >
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                          >
-                            <div className="spotter-list-item">
-                              <div className="spotter-list-item-inner">
-                                <div className="spotter-list-item-dragger">
-                                  <div className="spotter-list-item-dragger-inner">
-                                    {item.id}
-                                  </div>
-                                </div>
-                                <div className="spotter-list-item-content">
-                                  {item.title}{' '}
-                                  <Button to={'/item/' + item.id} text="Edit" />{' '}
-                                  <Button
-                                    onClick={() => {
-                                      setRemovingItem(item.id);
-                                    }}
-                                    type="error"
-                                    text="Delete"
-                                  />
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </DragDropContext>
-          ) : (
-            <div>No one, yet</div>
-          ))}
-      </div>
+      <Table
+        onDragEnd={this.onDragEnd}
+        className="spotter-list"
+        items={items}
+        structure={[
+          {
+            name: 'id',
+            label: 'Id',
+          },
+          {
+            name: 'title',
+            label: 'Title',
+          },
+          {
+            name: 'time',
+            label: 'Last update',
+            content: (data) => {
+              let time =  data.time && parseInt(data.time) ? (parseInt(data.time) * 1000) : false;
+              return time ? new Date(time).formatting('dd.mm.yyyy hh:ii:ss') : '';
+            }
+          },
+          {
+            label: 'Actions',
+            buttons: [
+              {
+                type: 'edit',
+                onClick: (data) => {
+                  historyPush('/item/' + data.id);
+                },
+              },
+              {
+                type: 'remove',
+                onClick: (data) => {
+                  setRemovingItem(data.id);
+                },
+              },
+            ],
+          },
+        ]}
+      />
     );
   }
 }

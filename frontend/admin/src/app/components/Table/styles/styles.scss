@@ -1,0 +1,92 @@
+.spotter-table {
+  background: #fff;
+  border-radius: 5px;
+  overflow: hidden;
+  user-select: none;
+  &-empty {
+    padding: 10px 25px;
+    color: #888;
+  }
+  &-rows {
+    padding: 5px 0;
+  }
+  &-row {
+    padding: 5px 10px;
+    &__header {
+      // margin-top: -36px;
+      box-shadow: none;
+      .spotter-table-row-inner {
+        background-color: transparent;
+        box-shadow: none;
+        padding: 0 12px;
+      }
+    }
+    &-inner {
+      font-size: 0;
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      border-radius: 5px;
+      background-color: #eee;
+      box-shadow: 0 5px 10px -10px #000;
+    }
+  }
+  &-col {
+    font-size: 14px;
+    padding: 5px;
+    align-items: center;
+    flex: 1;
+  }
+  &-button {
+    display: inline-block;
+    vertical-align: middle;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: none;
+    background-color: none;
+    cursor: pointer;
+    margin-left: 10px;
+    &:focus{
+      outline: none;
+    }
+    svg {
+      width: 100%;
+      height: auto;
+      fill: #27ca5d;
+    }
+    &__edit{
+      svg{
+        fill: #0088cc;
+      }
+    }
+    &__remove{
+      svg{
+        fill: #e74b43;
+      }
+    }
+  }
+}
+
+.spotter-table__over-labels {
+  .spotter-table {
+    &-items {
+      margin-top: -32px;
+    }
+    &-rows {
+      padding-top: 0;
+    }
+    &-row {
+      &__header {
+        padding: 0;
+        box-shadow: none;
+        .spotter-table-row-inner {
+          background-color: #ddd;
+          border-radius: 0;
+          box-shadow: none;
+          padding: 10px 20px 40px 20px;
+        }
+      }
+    }
+  }
+}

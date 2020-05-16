@@ -1,7 +1,7 @@
 import { store } from 'store';
 import Request from 'modules/Request';
 import { loaderOn, loaderOff, messagePush } from 'actions/Status';
-import { goTo } from 'actions/App';
+import { historyReplace } from 'actions/App';
 import Emitter from 'core/emitter';
 export const getItems = () => {
   return new Promise((resolve, reject) => {
@@ -63,7 +63,7 @@ export const saveItem = (item) => {
   return new Promise((resolve, reject) => {
     action(item)
       .then((resp) => {
-        goTo('/');
+        historyReplace('/');
         messagePush({
           type: 'success',
           message: resp,
@@ -104,7 +104,7 @@ export const removeItem = (id) => {
       },
     })
       .then((resp) => {
-        goTo('/');
+        historyReplace('/');
         Emitter.emit('listReload');
         messagePush({
           type: 'success',
@@ -145,11 +145,6 @@ export const saveItems = (items) => {
         resolve(message);
       })
       .catch((error) => {
-        messagePush({
-          type: 'error',
-          message: error,
-          delay: 3000,
-        });
         reject(error);
       })
       .finally(() => {

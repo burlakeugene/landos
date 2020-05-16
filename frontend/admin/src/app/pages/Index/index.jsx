@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import List from 'containers/List';
 import Page from 'components/Page';
+import Transactions from 'components/Transactions';
 class Index extends Component {
   render() {
     return (

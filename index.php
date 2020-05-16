@@ -42,7 +42,7 @@ function spotter_create_db() {
 
 	$sql = "CREATE TABLE $table (
 		`id` mediumint(9) NOT NULL AUTO_INCREMENT,
-		`time` datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+		`time` varchar(255) DEFAULT '0000000000' NOT NULL,
 		`title` varchar(255) NOT NULL,
 		`data` longtext,
 		`order` mediumint(11) NOT NULL DEFAULT 0,
@@ -174,7 +174,7 @@ function add_item(WP_REST_Request $req){
 	$item = $req['item'];
 	$item = json_encode($item);
 	$item = json_decode($item, true);
-	$item['time'] = date('Y-m-d H:i:s');
+	$item['time'] = time();
 	$landings = $wpdb->get_results("SELECT * FROM $table ORDER BY `order` DESC LIMIT 1");
 	if($landings[0]){
 		$order = intval($landings[0]->order);
@@ -193,7 +193,7 @@ function edit_item(WP_REST_Request $req){
 	$item = $req['item'];
 	$item = json_encode($item);
 	$item = json_decode($item, true);
-	$item['time'] = date('Y-m-d H:i:s');
+	$item['time'] = time();
 	$result = $wpdb->update($table, $item, array(
 		'id' => $item['id']
 	));
@@ -221,7 +221,7 @@ function save_items(WP_REST_Request $req){
 	$requests = [];
 	foreach($items as $item){
 		$requests[] = array(
-			'status' => $wpdb->update($table, array('order' => $item['order'], 'time' => date('Y-m-d H:i:s')), array('id' => $item['id'])),
+			'status' => $wpdb->update($table, array('order' => $item['order']), array('id' => $item['id'])),
 			'id' => $item['id']
 		);
 	}
@@ -229,8 +229,9 @@ function save_items(WP_REST_Request $req){
 	foreach($requests as $request){
 		if(!$request['status']) $errors[] = $request['id'];
 	}
+	$is_error = count($items) > 1 && count($errors) == count($items);
 	$response = rest_ensure_response('');
-	$response->set_status(count($errors) ? 400 : 200);
-	$response->set_data(count($errors) ? 'Can\'t save' : 'Saved');
+	$response->set_status($is_error ? 400 : 200);
+	$response->set_data($is_error ? 'Can\'t save' : 'Saved');
 	return $response;
 }

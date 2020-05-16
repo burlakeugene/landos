@@ -1,44 +1,18 @@
 .spotter-list {
-  user-select: none;
-  position: relative;
-  &-item {
-    transition: all 0.3s;
-    &-inner {
-      position: relative;
-      padding: 2px 0 2px 54px;
-      overflow: hidden;
+  .spotter-table-row-inner {
+    display: block;
+  }
+  .spotter-table-col {
+    display: inline-block;
+    vertical-align: center;
+    width: calc((100% - 50px - 70px) / 2);
+    &:first-child {
+      width: 50px;
     }
-    &-content {
-      background-color: #fff;
-      padding: 10px 20px;
-    }
-    &-dragger {
-      position: absolute;
-      top: 2;
-      left: 0;
-      height: calc(100% - 4px);
-      width: 54px;
-      text-align: center;
-      background-color: #fff;
-      border-radius: 30px 0 0 30px;
-      cursor: grab;
-      &:after {
-        content: '';
-        display: block;
-        position: absolute;
-        right: -2px;
-        width: 4px;
-        height: 100%;
-        background-color: #f1f1f1;
-      }
-      &-inner {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 14px;
-        font-weight: bold;
-      }
+    &:last-child {
+      width: 70px;
+      padding: 0 5px;
+      text-align: right;
     }
   }
 }
