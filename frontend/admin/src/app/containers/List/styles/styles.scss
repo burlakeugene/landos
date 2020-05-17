@@ -4,8 +4,8 @@
   }
   .spotter-table-col {
     display: inline-block;
-    vertical-align: center;
-    width: calc((100% - 50px - 70px) / 2);
+    vertical-align: middle;
+    width: calc((100% - 50px - 70px) / 3);
     &:first-child {
       width: 50px;
     }

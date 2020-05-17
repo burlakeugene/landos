@@ -150,8 +150,21 @@ add_action( 'rest_api_init', function () {
 function get_items(){
 	global $wpdb;
 	$table = $wpdb->prefix . 'spotter';
-	$landing = $wpdb->get_results("SELECT * FROM $table ORDER BY `order` DESC");
-	return $landing;
+	$landings = $wpdb->get_results("SELECT * FROM $table ORDER BY `order` DESC");
+	foreach($landings as $key => $landing){
+		$posts = $wpdb->get_results("SELECT * FROM {$wpdb->postmeta} WHERE meta_key = 'spotter_id' AND  meta_value = {$landing->id}");
+		$usedBy = [];
+		foreach($posts as $post){
+			$id = intval($post->post_id);
+			$usedBy[] = array(
+				'id' => $id,
+				'title' => get_the_title($id),
+				'link' => get_permalink($id)
+			);
+		}
+		$landings[$key]->usedBy = $usedBy;
+	}
+	return $landings;
 }
 
 function get_item(WP_REST_Request $req){

@@ -78,9 +78,30 @@ class List extends Component {
             name: 'time',
             label: 'Last update',
             content: (data) => {
-              let time =  data.time && parseInt(data.time) ? (parseInt(data.time) * 1000) : false;
-              return time ? new Date(time).formatting('dd.mm.yyyy hh:ii:ss') : '';
-            }
+              let time =
+                data.time && parseInt(data.time)
+                  ? parseInt(data.time) * 1000
+                  : false;
+              return time
+                ? new Date(time).formatting('dd.mm.yyyy hh:ii:ss')
+                : '';
+            },
+          },
+          {
+            label: 'Used by',
+            content: (data) => {
+              return data?.usedBy?.length ? (
+                <>
+                  {data.usedBy.map((item, index) => (
+                    <div>
+                      <a href={item.link} target="_blank">
+                        {item.title}
+                      </a>
+                    </div>
+                  ))}
+                </>
+              ) : null;
+            },
           },
           {
             label: 'Actions',
