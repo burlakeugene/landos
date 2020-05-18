@@ -100,7 +100,7 @@ class List extends Component {
                     </div>
                   ))}
                 </>
-              ) : null;
+              ) : 'No one';
             },
           },
           {

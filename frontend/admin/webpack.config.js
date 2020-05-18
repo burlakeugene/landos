@@ -84,7 +84,7 @@ module.exports = {
       modules: ROOT_DIR + '/src/app/modules',
       core: ROOT_DIR + '/src/app/core',
       config: ROOT_DIR + '/config//common.json',
-      store: ROOT_DIR + '/src/app/redux/store',
+      store: ROOT_DIR + '/src/app/redux/store'
     }
   }
 };

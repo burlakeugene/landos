@@ -1,0 +1,51 @@
+.spotter-item {
+  &-title {
+    margin-bottom: 20px;
+    width: 100%;
+    &-back {
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 10px;
+      left: 0;
+      width: 30px;
+      height: 30px;
+      padding: 0;
+      border: none;
+      background-color: transparent;
+      background-image: url(./images/back.svg);
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+      transition: all 0.3s;
+      cursor: pointer;
+      &:focus {
+        outline: none;
+      }
+      &:hover {
+        background-position-x: calc(50% + 10px);
+      }
+    }
+    input {
+      width: calc(100% - 40px);
+      margin: 0;
+      padding: 5px 10px;
+      font-size: 16px;
+      line-height: 1em;
+      border: none;
+      background: transparent;
+      padding: 0;
+      display: inline-block;
+      vertical-align: middle;
+      font-size: 26px;
+      font-weight: 700;
+      &:focus {
+        outline: none;
+        border-color: #ddd;
+        box-shadow: none;
+      }
+    }
+  }
+  &-buttons {
+    margin-top: 20px;
+  }
+}

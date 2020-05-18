@@ -1,25 +1,29 @@
-.spotter-page{
+.spotter-page {
+  &-header {
+    margin-bottom: 20px;
+  }
   &-title,
-  &-subtitle{
+  &-subtitle {
     margin: 0;
     line-height: 1em;
   }
-  &-title{
+  &-title {
+    font-size: 26px;
     font-weight: 700;
   }
-  &-subtitle{
+  &-subtitle {
     margin-top: 10px;
     font-weight: 300;
   }
-  &-buttons{
+  &-buttons {
     margin-top: 20px;
   }
-  &-title{
+  &-title {
     display: inline-block;
     vertical-align: middle;
     max-width: calc(100% - 40px);
   }
-  &-back{
+  &-back {
     display: inline-block;
     vertical-align: middle;
     margin-right: 10px;
@@ -35,14 +39,11 @@
     background-size: 100% 100%;
     transition: all 0.3s;
     cursor: pointer;
-    &:focus{
+    &:focus {
       outline: none;
     }
-    &:hover{
+    &:hover {
       background-position-x: calc(50% + 10px);
     }
-  }
-  &-content{
-    margin: 20px 0;
   }
 }

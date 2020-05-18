@@ -18,6 +18,7 @@ export const getItem = (id) => {
     Request.get({
       url: '/item/' + id,
     }).then((resp) => {
+      if(resp.data) resp.data = JSON.parse(resp.data);
       resolve(resp);
     });
   });
@@ -58,6 +59,7 @@ export const addItem = (item) => {
 };
 
 export const saveItem = (item) => {
+  if(item.data) item.data = JSON.stringify(item.data);
   loaderOn();
   let action = item.id ? editItem : addItem;
   return new Promise((resolve, reject) => {

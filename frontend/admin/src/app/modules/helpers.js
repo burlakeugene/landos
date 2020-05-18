@@ -29,6 +29,17 @@ export const getStyle = function (elem, rule) {
   return result;
 };
 
-export const generateDate = (time) => {
-
-}
+export const deepMerge = (obj1, obj2) => {
+  for (var p in obj2) {
+    try {
+      if (obj2[p].constructor == Object) {
+        obj1[p] = deepMerge(obj1[p], obj2[p]);
+      } else {
+        obj1[p] = obj2[p];
+      }
+    } catch (e) {
+      obj1[p] = obj2[p];
+    }
+  }
+  return obj1;
+};

@@ -8,17 +8,20 @@ class Page extends Component {
     let { title, subtitle, children, buttons, back } = this.props;
     return (
       <div className="spotter-page">
-        {back && (
-          <button
-            className="spotter-page-back"
-            onClick={() => {
-              history.goBack();
-            }}
-          ></button>
+        {(title || subtitle) && (
+          <div className="spotter-page-header">
+            {back && (
+              <button
+                className="spotter-page-back"
+                onClick={() => {
+                  history.goBack();
+                }}
+              ></button>
+            )}
+            {title && <h1 className="spotter-page-title">{title}</h1>}
+            {subtitle && <h2 className="spotter-page-subtitle">{subtitle}</h2>}
+          </div>
         )}
-        {title && <h1 className="spotter-page-title">{title}</h1>}
-        {subtitle && <h2 className="spotter-page-subtitle">{subtitle}</h2>}
-
         {children && <div className="spotter-page-content">{children}</div>}
         {buttons && buttons.length && (
           <div className="spotter-page-buttons">

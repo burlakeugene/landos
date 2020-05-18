@@ -3,6 +3,11 @@ import { loaderOff, loaderOn, messagePush } from 'actions/Status';
 import { getItem } from 'actions/Items';
 import Button from 'components/Button';
 import { setRemovingItem, saveItem } from 'actions/Items';
+import Sections from './components/Sections';
+import { getItemStructure } from 'core/structures';
+import history from 'core/history';
+import './styles/styles.scss';
+
 class Item extends Component {
   constructor(props) {
     super(props);
@@ -12,6 +17,7 @@ class Item extends Component {
     };
     this.save = this.save.bind(this);
     this.remove = this.remove.bind(this);
+    this.setField = this.setField.bind(this);
   }
   save() {
     let { item } = this.state;
@@ -26,9 +32,10 @@ class Item extends Component {
     loaderOn();
     getItem(id).then((resp) => {
       loaderOff();
-      if (!resp) return;
+      let obj = getItemStructure();
+      if (resp) obj = resp;
       this.setState({
-        item: resp,
+        item: obj,
       });
     });
   }
@@ -45,24 +52,43 @@ class Item extends Component {
       item,
     });
   }
+  setField(name, value) {
+    let { item } = this.state;
+    item[name] = value;
+    this.setState({
+      item,
+    });
+  }
   render() {
-    let { item, id } = this.state;
+    let { item, id } = this.state,
+      { title = '', data = false } = item;
+    console.log(data);
     return (
       <div className="spotter-item">
-        <input
-          type="text"
-          onChange={(e) => {
-            this.changeField(e, 'title');
-          }}
-          value={this.getField('title')}
-        />
-        <textarea
-          type="text"
-          onChange={(e) => {
-            this.changeField(e, 'data');
-          }}
-          value={this.getField('data')}
-        />
+        <div className="spotter-item-title">
+          <button
+            className="spotter-item-title-back"
+            onClick={() => {
+              history.goBack();
+            }}
+          ></button>
+          <input
+            type="text"
+            onChange={(e) => {
+              this.changeField(e, 'title');
+            }}
+            value={title}
+          />
+        </div>
+        {data && (
+          <Sections
+            data={data}
+            onChange={(data) => {
+              this.setField('data', data);
+            }}
+          />
+        )}
+
         <div className="spotter-item-buttons">
           <Button
             type={'success'}

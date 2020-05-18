@@ -7,7 +7,7 @@ import Item from 'containers/Item';
 class ItemPage extends Component {
   render() {
     return (
-      <Page title={'Item'} back>
+      <Page>
         <Item {...this.props} />
       </Page>
     );

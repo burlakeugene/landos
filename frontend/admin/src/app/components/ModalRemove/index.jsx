@@ -13,6 +13,7 @@ class ModalRemove extends Component {
       <Modal
         opened={id}
         maxWidth={320}
+        centered={true}
         title={'Remove'}
         onHide={() => {
           setRemovingItem(false);
