@@ -14,6 +14,7 @@ class Table extends Component {
     };
     this.onDragEnd = this.onDragEnd.bind(this);
     this.reOrder = this.reOrder.bind(this);
+    this.onRowClick = this.onRowClick.bind(this);
   }
   reOrder(list, startIndex, endIndex) {
     const result = Array.from(list);
@@ -38,6 +39,9 @@ class Table extends Component {
       obj.className = nextProps.className;
     }
     return obj;
+  }
+  onRowClick(data) {
+    this.props.onRowClick && this.props.onRowClick(data);
   }
   render() {
     let { items, structure, title, emptyText, className } = this.state,
@@ -85,7 +89,12 @@ class Table extends Component {
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
                             >
-                              <div className="spotter-table-row">
+                              <div
+                                className="spotter-table-row"
+                                onClick={() => {
+                                  this.onRowClick(item);
+                                }}
+                              >
                                 <div className="spotter-table-row-inner">
                                   {structure.map(
                                     (structureItem, structureIndex) => {
@@ -118,14 +127,17 @@ class Table extends Component {
                                                               button.type
                                                             : '',
                                                         ].join(' ')}
-                                                        onClick={() => {
+                                                        onClick={(e) => {
                                                           button.onClick &&
                                                             button.onClick(
+                                                              e,
                                                               item
                                                             );
                                                         }}
                                                       >
-                                                        <Icon type={button.type} />
+                                                        <Icon
+                                                          type={button.type}
+                                                        />
                                                       </button>
                                                     );
                                                   }

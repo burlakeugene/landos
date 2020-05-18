@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { getItems, saveItems } from 'actions/Items';
 import { loaderOff, loaderOn, messagePush } from 'actions/Status';
 import Emitter from 'core/emitter';
-import { Draggable, DragDropContext, Droppable } from 'react-beautiful-dnd';
 import Button from 'components/Button';
 import { setRemovingItem } from 'actions/Items';
 import Transactions from 'components/Transactions';
@@ -65,6 +64,9 @@ class List extends Component {
         onDragEnd={this.onDragEnd}
         className="spotter-list"
         items={items}
+        onRowClick={(data) => {
+          historyPush('/item/' + data.id)
+        }}
         structure={[
           {
             name: 'id',
@@ -94,7 +96,9 @@ class List extends Component {
                 <>
                   {data.usedBy.map((item, index) => (
                     <div>
-                      <a href={item.link} target="_blank">
+                      <a href={item.link} target="_blank" onClick={(e) => {
+                        e.stopPropagation();
+                      }}>
                         {item.title}
                       </a>
                     </div>
@@ -108,13 +112,15 @@ class List extends Component {
             buttons: [
               {
                 type: 'edit',
-                onClick: (data) => {
+                onClick: (e, data) => {
+                  e.stopPropagation();
                   historyPush('/item/' + data.id);
                 },
               },
               {
                 type: 'remove',
-                onClick: (data) => {
+                onClick: (e, data) => {
+                  e.stopPropagation();
                   setRemovingItem(data.id);
                 },
               },
