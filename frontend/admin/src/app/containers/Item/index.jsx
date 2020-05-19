@@ -2,13 +2,17 @@ import React, { Component } from 'react';
 import { loaderOff, loaderOn, messagePush } from 'actions/Status';
 import { getItem } from 'actions/Items';
 import Button from 'components/Button';
-import { setRemovingItem, saveItem } from 'actions/Items';
+import { setRemovingItem, saveItem, uploadImage } from 'actions/Items';
 import history from 'core/history';
 import Modal from 'burlak-react-modal';
 import { getSectionsStructure, getItemDefault } from 'core/structures';
 import { getSectionImage } from './previews';
 import { Draggable, DragDropContext, Droppable } from 'react-beautiful-dnd';
+import Icon from 'components/Icon';
+import ContentEditable from 'components/ContentEditable';
 import './styles/styles.scss';
+
+let sectionRerenderKey = 0;
 
 class Item extends Component {
   constructor(props) {
@@ -25,6 +29,17 @@ class Item extends Component {
     this.openModal = this.openModal.bind(this);
     this.changeSectionField = this.changeSectionField.bind(this);
     this.onDragEnd = this.onDragEnd.bind(this);
+    this.changeSectionTitle = this.changeSectionTitle.bind(this);
+    this.removeSection = this.removeSection.bind(this);
+    this.toggleFields = this.toggleFields.bind(this);
+  }
+  toggleFields(sectionId) {
+    let { item } = this.state;
+    item.data.sections[sectionId].opened = !item.data.sections[sectionId]
+      .opened;
+    this.setState({
+      item,
+    });
   }
   openModal(index = 0) {
     index = index < 0 ? 0 : index;
@@ -72,6 +87,22 @@ class Item extends Component {
       item,
     });
   }
+  changeSectionTitle(value, sectionIndex) {
+    let { item } = this.state;
+    if (!item.data.sections) return;
+    item.data.sections[sectionIndex].title = value;
+    this.setState({
+      item,
+    });
+  }
+  removeSection(sectionIndex) {
+    let { item } = this.state;
+    if (!item.data.sections) return;
+    item.data.sections.splice(sectionIndex, 1);
+    this.setState({
+      item,
+    });
+  }
   buildText(field, index, sectionIndex) {
     return (
       <div
@@ -96,6 +127,58 @@ class Item extends Component {
       </div>
     );
   }
+  buildFile(field, index, sectionIndex) {
+    return (
+      <div
+        className={[
+          'spotter-section-field',
+          'spotter-section-field__' + field.type,
+        ].join(' ')}
+      >
+        {field?.value?.thumb && <img src={field.value.thumb} />}
+        <input
+          type={field.type}
+          name={field.name}
+          onChange={(event) => {
+            let { values } = this.state;
+            let filesObject = [],
+              files = event.target.files;
+            new Promise((resolve, reject) => {
+              if (!files.length) resolve(filesObject);
+              for (let i = 1; i <= files.length; i++) {
+                let file = files[i - 1];
+                let reader = new FileReader();
+                reader.readAsBinaryString(file);
+                reader.onload = function () {
+                  let base64 = btoa(reader.result);
+                  filesObject.push({
+                    name: file.name,
+                    data: 'data:' + file.type + ';base64,' + base64,
+                    type: file.type,
+                    size: file.size,
+                  });
+                  if (i === files.length) {
+                    setTimeout(() => {
+                      resolve(filesObject);
+                    }, 0);
+                  }
+                };
+              }
+            }).then((resp) => {
+              uploadImage(resp)
+                .then((resp) => {
+                  console.log(resp);
+                  this.changeSectionField(resp[0], index, sectionIndex);
+                })
+                .catch((error) => {
+                  console.log(error);
+                });
+            });
+          }}
+        />
+      </div>
+    );
+  }
   switchField(field, index, sectionIndex) {
     switch (field.type) {
       case 'text':
@@ -105,7 +188,8 @@ class Item extends Component {
         break;
       case 'textarea':
         break;
-      case 'color':
+      case 'file':
+        return this.buildFile(field, index, sectionIndex);
         break;
       case 'deliver':
         break;
@@ -115,6 +199,9 @@ class Item extends Component {
   }
   save() {
     let { item } = this.state;
+    item.data.sections.forEach((section, index) => {
+      delete item.data.sections[index].opened;
+    });
     saveItem(item);
   }
   remove() {
@@ -139,11 +226,13 @@ class Item extends Component {
       result.destination.index
     );
     item.data.sections = sections;
+    ++sectionRerenderKey;
     this.setState({
       item,
     });
   }
   render() {
+    this.sectionsTitles = [];
     let { item, id, newSectionIndex } = this.state,
       { title = '', data = false } = item;
     if (!data) return null;
@@ -156,13 +245,21 @@ class Item extends Component {
               history.goBack();
             }}
           ></button>
-          <input
-            type="text"
+          <ContentEditable
+            html={title}
             onChange={(e) => {
               this.changeField(e, 'title');
             }}
-            value={title}
+            ref={(node) => (this.itemTitle = node)}
           />
+          <button
+            className="spotter-item-title-edit"
+            onClick={() => {
+              this.itemTitle.focus();
+            }}
+          >
+            <Icon type="edit" />
+          </button>
         </div>
         <Modal
           opened={newSectionIndex !== false}
@@ -230,15 +327,98 @@ class Item extends Component {
                                 this.openModal(sectionIndex);
                               }}
                             ></button>
-                            <div className="spotter-section-inner">
-                              {section.title}
-                              {section.fields.map((field, index) => {
-                                return this.switchField(
-                                  field,
-                                  index,
-                                  sectionIndex
-                                );
-                              })}
+                            <div
+                              key={
+                                'section-' + sectionIndex + sectionRerenderKey
+                              }
+                              className="spotter-section-inner"
+                              onClick={() => {
+                                this.toggleFields(sectionIndex);
+                                let sectionTitles = this.sectionsTitles;
+                                sectionTitles &&
+                                  sectionTitles.forEach((section) => {
+                                    section && section.blur();
+                                  });
+                              }}
+                            >
+                              <div className="spotter-section-header">
+                                <div className="spotter-section-header-title">
+                                  <ContentEditable
+                                    html={section.title}
+                                    ref={(node) => {
+                                      this[
+                                        'sectionTitle' + sectionIndex
+                                      ] = node;
+                                      this.sectionsTitles.push(
+                                        this['sectionTitle' + sectionIndex]
+                                      );
+                                    }}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                    }}
+                                    onChange={(e) => {
+                                      this.changeSectionTitle(
+                                        e.target.value,
+                                        sectionIndex
+                                      );
+                                    }}
+                                  />
+                                  <button
+                                    className="spotter-section-header-title-edit"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      this[
+                                        'sectionTitle' + sectionIndex
+                                      ].focus();
+                                    }}
+                                  >
+                                    <Icon type="edit" />
+                                  </button>
+                                </div>
+                                <div className="spotter-section-header-actions">
+                                  <button
+                                    className="spotter-section-header-action spotter-section-header-action__remove"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      this.removeSection(sectionIndex);
+                                    }}
+                                  >
+                                    <Icon type={'remove'} />
+                                  </button>
+                                  <button
+                                    className={[
+                                      'spotter-section-header-action',
+                                      'spotter-section-header-action__arrow',
+                                      section.opened
+                                        ? 'spotter-section-header-action__arrow__active'
+                                        : '',
+                                    ].join(' ')}
+                                  >
+                                    <Icon type={'arrow_down'} />
+                                  </button>
+                                </div>
+                              </div>
+                              <div
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                }}
+                                className={[
+                                  'spotter-section-fields',
+                                  section.opened
+                                    ? 'spotter-section-fields__opened'
+                                    : '',
+                                ].join(' ')}
+                              >
+                                <div className="spotter-section-fields-inner">
+                                  {section.fields.map((field, index) => {
+                                    return this.switchField(
+                                      field,
+                                      index,
+                                      sectionIndex
+                                    );
+                                  })}
+                                </div>
+                              </div>
                             </div>
                             <button
                               className="spotter-section-add spotter-section-add__bottom"

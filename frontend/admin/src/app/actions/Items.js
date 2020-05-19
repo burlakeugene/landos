@@ -154,3 +154,18 @@ export const saveItems = (items) => {
       });
   });
 };
+
+export const uploadImage = (files) => {
+  return new Promise((resolve, reject) => {
+    Request.post({
+      url: '/upload',
+      data: {
+        files,
+      },
+    }).then((resp) => {
+      resolve(resp);
+    }).catch((error) => {
+      reject(error)
+    })
+  })
+}

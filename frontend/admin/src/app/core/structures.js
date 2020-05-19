@@ -15,6 +15,12 @@ export const getSectionsStructure = () => {
         title: 'Hero Image',
         fields: [
           {
+            type: 'file',
+            name: 'background',
+            label: 'Background image',
+            value: '',
+          },
+          {
             type: 'text',
             name: 'title',
             label: 'Title',
@@ -37,9 +43,8 @@ export const getSectionsStructure = () => {
                 value: 'right',
                 text: 'Right',
               },
-            ]
+            ],
           },
-          { type: 'color', name: 'titleColor', value: '#000' },
           { type: 'deliver' },
           {
             type: 'textarea',
@@ -63,9 +68,8 @@ export const getSectionsStructure = () => {
                 value: 'right',
                 text: 'Right',
               },
-            ]
+            ],
           },
-          { type: 'color', name: 'descriptionColor', value: '#000' },
         ],
       },
     ],
