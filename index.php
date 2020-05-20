@@ -145,6 +145,10 @@ add_action( 'rest_api_init', function () {
 		'methods' => 'POST',
 		'callback' => 'remove_item'
 	));
+	register_rest_route( 'spotter', '/upload', array(
+		'methods' => 'POST',
+		'callback' => 'upload_files'
+	));
 });
 
 function get_items(){
@@ -247,4 +251,54 @@ function save_items(WP_REST_Request $req){
 	$response->set_status($is_error ? 400 : 200);
 	$response->set_data($is_error ? 'Can\'t save' : 'Saved');
 	return $response;
+}
+
+function generate_relative_path($path){
+	$domain = get_site_url();
+  return str_replace( $domain, '', $path );
+}
+
+function upload_files(WP_REST_Request $req){
+	$file = $req['file'];
+	$wp_upload_dir = wp_upload_dir();
+	if( !function_exists( 'wp_handle_sideload' ) ) {
+		require_once( ABSPATH . 'wp-admin/includes/file.php' );
+	}
+	$filename = $file['name'];
+	$filetype = wp_check_filetype( basename( $filename ), null );
+	$upload_dir = wp_upload_dir();
+	$upload_path = str_replace( '/', DIRECTORY_SEPARATOR, $upload_dir['path'] ) . DIRECTORY_SEPARATOR;
+	$img = $file['data'];
+	$img = str_replace('data:image/png;base64,', '', $img);
+	$img = str_replace(' ', '+', $img);
+	$decoded = base64_decode($img);
+	$image_upload = file_put_contents( $upload_path . $filename, $decoded );
+	$file = array();
+	$file['error']    = '';
+	$file['tmp_name'] = $upload_path . $filename;
+	$file['name']     = $filename;
+	$file['type']     = $filetype;
+	$file['size']     = filesize( $upload_path . $filename );
+	$file_return = wp_handle_sideload( $file, array( 'test_form' => false ) );
+	$filename = $file_return['file'];
+	$attachment = array(
+		'post_mime_type' => $file_return['type'],
+		'post_title' => preg_replace('/\.[^.]+$/', '', basename($filename)),
+		'post_content' => '',
+		'post_status' => 'inherit',
+		'guid' => $wp_upload_dir['url'] . '/' . basename($filename)
+	);
+	$attach_id = wp_insert_attachment( $attachment, $filename );
+	require_once(ABSPATH . 'wp-admin/includes/image.php');
+	$attach_data = wp_generate_attachment_metadata( $attach_id, $filename );
+	wp_update_attachment_metadata( $attach_id, $attach_data );
+	$full = wp_get_attachment_image_src($attach_id, 'full')[0];
+	$large = wp_get_attachment_image_src($attach_id, 'large')[0];
+	$thumbnail = wp_get_attachment_image_src($attach_id, 'thumbnail')[0];
+	$result = array(
+		'full' => $full ? generate_relative_path($full) : false,
+		'large' => $large ? generate_relative_path($large) : false,
+		'thumb' => $thumbnail ? generate_relative_path($thumbnail) : false
+	);
+	return $result;
 }
