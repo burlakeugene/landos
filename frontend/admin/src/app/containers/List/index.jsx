@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { getItems, saveItems } from 'actions/Items';
-import { loaderOff, loaderOn, messagePush } from 'actions/Status';
+import { loaderChange } from 'actions/Preloader';
+import {loaderOn, loaderOff} from 'actions/Status';
 import Emitter from 'core/emitter';
 import Button from 'components/Button';
 import { setRemovingItem } from 'actions/Items';
@@ -41,10 +42,21 @@ class List extends Component {
       }
     );
   }
-  getItems() {
-    loaderOn();
+  getItems(mini = false) {
+    if(mini) {
+      loaderOn();
+    }
+    else{
+      loaderChange(true);
+    }
     getItems().then((resp) => {
-      loaderOff();
+      loaderChange(false);
+      if(mini) {
+        loaderOff();
+      }
+      else{
+        loaderChange(false);
+      }
       this.setState({
         items: resp,
       });

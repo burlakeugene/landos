@@ -11,6 +11,7 @@ import { Draggable, DragDropContext, Droppable } from 'react-beautiful-dnd';
 import Icon from 'components/Icon';
 import ContentEditable from 'components/ContentEditable';
 import { getSiteUrl } from 'modules/app';
+import { loaderChange } from 'actions/Preloader';
 import './styles/styles.scss';
 
 let sectionRerenderKey = 0;
@@ -93,9 +94,9 @@ class Item extends Component {
   }
   componentDidMount() {
     let { id } = this.state;
-    loaderOn();
+    loaderChange(true);
     getItem(id).then((resp) => {
-      loaderOff();
+      loaderChange(false);
       let obj = getItemDefault();
       if (resp) obj = resp;
       this.setState({
@@ -180,12 +181,10 @@ class Item extends Component {
           field.width ? 'spotter-section-field__' + field.width : '',
         ].join(' ')}
       >
-        <div className="spotter-section-field-inner">
-          {field.fields &&
-            field.fields.map((field, index) => {
-              return this.switchField(field);
-            })}
-        </div>
+        {field.fields &&
+          field.fields.map((field, index) => {
+            return this.switchField(field);
+          })}
       </div>
     );
   }
@@ -198,9 +197,7 @@ class Item extends Component {
           field.width ? 'spotter-section-field__' + field.width : '',
         ].join(' ')}
       >
-        <div className="spotter-section-field-inner">
-          <div></div>
-        </div>
+        <div></div>
       </div>
     );
   }
@@ -214,7 +211,9 @@ class Item extends Component {
         ].join(' ')}
       >
         <label>
-          <div className="spotter-section-field-label">{field.label}</div>
+          {field.label && (
+            <div className="spotter-section-field-label">{field.label}</div>
+          )}
           <div className="spotter-section-field-control">
             <input
               type="text"
@@ -248,89 +247,89 @@ class Item extends Component {
           isLoading ? 'spotter-section-field__loading' : '',
         ].join(' ')}
       >
-        <div className="spotter-section-field-inner">
+        {field.label && (
           <div className="spotter-section-field-label">{field.label}</div>
-          <div
+        )}
+        <div
+          className={[
+            'spotter-section-field-control',
+            !preview ? 'spotter-section-field-control__empty' : '',
+          ].join(' ')}
+        >
+          <div className="spotter-section-field-control-loader"></div>
+          <button
             className={[
-              'spotter-section-field-control',
-              !preview ? 'spotter-section-field-control__empty' : '',
+              'spotter-section-field-control-clear',
+              preview && !isLoading
+                ? 'spotter-section-field-control-clear__show'
+                : '',
             ].join(' ')}
-          >
-            <div className="spotter-section-field-control-loader"></div>
-            <button
-              className={[
-                'spotter-section-field-control-clear',
-                preview && !isLoading
-                  ? 'spotter-section-field-control-clear__show'
-                  : '',
-              ].join(' ')}
-              onClick={(e) => {
-                this.changeSectionField('', field.nameUniq);
-              }}
-            ></button>
-            <label for={field.nameUniq}>
-              {preview && (
-                <img
-                  src={getSiteUrl() + preview}
-                  onError={(event) => {
-                    event.target.src =
-                      'data:image/png;base64,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';
-                  }}
-                />
-              )}
-            </label>
-          </div>
-          <input
-            disabled={isLoading}
-            type={field.type}
-            name={field.name}
-            id={field.nameUniq}
-            onChange={(event) => {
-              let { values } = this.state;
-              let file = event.target.files[0],
-                { fileTypes = [] } = field,
-                fileResult = {};
-              if (!file) return;
-              new Promise((resolve, reject) => {
-                this.setLoading(field.nameUniq, true);
-                this.setError(field.nameUniq, false);
-                if (fileTypes.length && fileTypes.indexOf(file.type) < 0) {
-                  event.target.value = '';
-                  reject(fileTypes.join(', ') + ' types only');
-                }
-                let reader = new FileReader();
-                reader.readAsBinaryString(file);
-                reader.onload = function () {
-                  let base64 = btoa(reader.result);
-                  fileResult = {
-                    name: file.name,
-                    data: 'data:' + file.type + ';base64,' + base64,
-                    type: file.type,
-                    size: file.size,
-                  };
-                  resolve(fileResult);
-                };
-              })
-                .then((resp) => {
-                  uploadImage(resp)
-                    .then((resp) => {
-                      this.changeSectionField(resp, field.nameUniq);
-                      this.setLoading(field.nameUniq, false);
-                    })
-                    .catch((error) => {});
-                })
-                .catch((error) => {
-                  this.setLoading(field.nameUniq, false);
-                  this.setError(field.nameUniq, error);
-                });
+            onClick={(e) => {
+              this.changeSectionField('', field.nameUniq);
             }}
-          />
-          {errors[field.nameUniq] && (
-            <div className="spotter-section-field-error">
-              {errors[field.nameUniq]}
-            </div>
-          )}
+          ></button>
+          <label htmlFor={field.nameUniq}>
+            {preview && (
+              <img
+                src={getSiteUrl() + preview}
+                onError={(event) => {
+                  event.target.src =
+                    'data:image/png;base64,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';
+                }}
+              />
+            )}
+          </label>
         </div>
+        <input
+          disabled={isLoading}
+          type={field.type}
+          name={field.name}
+          id={field.nameUniq}
+          onChange={(event) => {
+            let { values } = this.state;
+            let file = event.target.files[0],
+              { fileTypes = [] } = field,
+              fileResult = {};
+            if (!file) return;
+            new Promise((resolve, reject) => {
+              this.setLoading(field.nameUniq, true);
+              this.setError(field.nameUniq, false);
+              if (fileTypes.length && fileTypes.indexOf(file.type) < 0) {
+                event.target.value = '';
+                reject(fileTypes.join(', ') + ' types only');
+              }
+              let reader = new FileReader();
+              reader.readAsBinaryString(file);
+              reader.onload = function () {
+                let base64 = btoa(reader.result);
+                fileResult = {
+                  name: file.name,
+                  data: 'data:' + file.type + ';base64,' + base64,
+                  type: file.type,
+                  size: file.size,
+                };
+                resolve(fileResult);
+              };
+            })
+              .then((resp) => {
+                uploadImage(resp)
+                  .then((resp) => {
+                    this.changeSectionField(resp, field.nameUniq);
+                    this.setLoading(field.nameUniq, false);
+                  })
+                  .catch((error) => {});
+              })
+              .catch((error) => {
+                this.setLoading(field.nameUniq, false);
+                this.setError(field.nameUniq, error);
+              });
+          }}
+        />
+        {errors[field.nameUniq] && (
+          <div className="spotter-section-field-error">
+            {errors[field.nameUniq]}
+          </div>
+        )}
       </div>
     );
   }
@@ -391,7 +390,7 @@ class Item extends Component {
     this.sectionsTitles = [];
     let { item, id, newSectionIndex, opened } = this.state,
       { title = '', data = false } = item;
-    if (!data) return null;
+    if(!data) return null;
     return (
       <div className="spotter-item">
         <div className="spotter-item-title">

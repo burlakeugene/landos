@@ -107,7 +107,7 @@ export const removeItem = (id) => {
     })
       .then((resp) => {
         historyReplace('/');
-        Emitter.emit('listReload');
+        Emitter.emit('listReload', true);
         messagePush({
           type: 'success',
           message: resp,
