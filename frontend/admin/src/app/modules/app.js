@@ -5,8 +5,12 @@ export const getConfig = (property) => {
 }
 
 export const getRestUrl = (string = '') => {
+  return getSiteUrl() + string;
+}
+
+export const getSiteUrl = () => {
   let selector = getConfig('appSelector'),
     appDom = document.querySelector(selector),
     root = appDom ? appDom.getAttribute('data-url') : '';
-  return root + string;
+  return root;
 }

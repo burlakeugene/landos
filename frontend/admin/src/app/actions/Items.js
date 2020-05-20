@@ -155,12 +155,12 @@ export const saveItems = (items) => {
   });
 };
 
-export const uploadImage = (files) => {
+export const uploadImage = (file) => {
   return new Promise((resolve, reject) => {
     Request.post({
       url: '/upload',
       data: {
-        files,
+        file,
       },
     }).then((resp) => {
       resolve(resp);

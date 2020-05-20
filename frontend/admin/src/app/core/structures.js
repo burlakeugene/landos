@@ -16,32 +16,44 @@ export const getSectionsStructure = () => {
         fields: [
           {
             type: 'file',
+            fileTypes: ['image/png', 'image/jpeg'],
             name: 'background',
             label: 'Background image',
             value: '',
+            width: 'third',
+            maxWidth: 150
           },
           {
-            type: 'text',
-            name: 'title',
-            label: 'Title',
-            value: '',
-          },
-          {
-            type: 'switch',
-            name: 'titleAlign',
-            value: 'left',
-            options: [
+            type: 'fields',
+            width: 'third',
+            fields: [
               {
+                type: 'text',
+                name: 'title',
+                label: 'Title',
+                value: '',
+              },
+              {
+                type: 'deliver'
+              },
+              {
+                type: 'switch',
+                name: 'titleAlign',
                 value: 'left',
-                text: 'Left',
-              },
-              {
-                value: 'center',
-                text: 'Center',
-              },
-              {
-                value: 'right',
-                text: 'Right',
+                options: [
+                  {
+                    value: 'left',
+                    text: 'Left',
+                  },
+                  {
+                    value: 'center',
+                    text: 'Center',
+                  },
+                  {
+                    value: 'right',
+                    text: 'Right',
+                  },
+                ],
               },
             ],
           },

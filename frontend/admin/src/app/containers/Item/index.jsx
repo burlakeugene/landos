@@ -10,6 +10,7 @@ import { getSectionImage } from './previews';
 import { Draggable, DragDropContext, Droppable } from 'react-beautiful-dnd';
 import Icon from 'components/Icon';
 import ContentEditable from 'components/ContentEditable';
+import { getSiteUrl } from 'modules/app';
 import './styles/styles.scss';
 
 let sectionRerenderKey = 0;
@@ -21,6 +22,9 @@ class Item extends Component {
       item: {},
       newSectionIndex: false,
       id: props.match.params.id,
+      errors: {},
+      loadings: {},
+      opened: {},
     };
     this.save = this.save.bind(this);
     this.remove = this.remove.bind(this);
@@ -33,12 +37,15 @@ class Item extends Component {
     this.removeSection = this.removeSection.bind(this);
     this.toggleFields = this.toggleFields.bind(this);
   }
-  toggleFields(sectionId) {
-    let { item } = this.state;
-    item.data.sections[sectionId].opened = !item.data.sections[sectionId]
-      .opened;
+  toggleFields(nameUniq) {
+    let { opened } = this.state;
+    if (opened[nameUniq]) {
+      delete opened[nameUniq];
+    } else {
+      opened[nameUniq] = true;
+    }
     this.setState({
-      item,
+      opened,
     });
   }
   openModal(index = 0) {
@@ -52,8 +59,32 @@ class Item extends Component {
       newSectionIndex: false,
     });
   }
+  generateHash() {
+    let rand = window.Math.floor(window.Math.random() * 0x10000000000000),
+      result;
+    (rand = rand.toString(16).substring(1)),
+      (result = rand.split('').splice(0, 10).join(''));
+    return result;
+  }
+  generateUniqFields(fields) {
+    for (let field in fields) {
+      fields[field]['nameUniq'] =
+        fields[field].name + '_' + this.generateHash();
+      if (fields[field].fields)
+        fields[field].fields = this.generateUniqFields(fields[field].fields);
+    }
+    return fields;
+  }
+  generateUniqSection(section) {
+    section['nameUniq'] = section.name + '_' + this.generateHash();
+    if (section.fields) {
+      section.fields = this.generateUniqFields(section.fields);
+    }
+    return section;
+  }
   addSection(section) {
     let { newSectionIndex, item } = this.state;
+    section = this.generateUniqSection(section);
     item.data.sections.splice(newSectionIndex, 0, section);
     this.setState({
       item,
@@ -79,10 +110,25 @@ class Item extends Component {
       item,
     });
   }
-  changeSectionField(value, fieldIndex, sectionIndex) {
+  setRecField(value, nameUniq, fields) {
+    for (let field in fields) {
+      if (fields[field]['nameUniq'] === nameUniq) fields[field].value = value;
+      if (fields[field].fields)
+        fields[field].fields = this.setRecField(
+          value,
+          nameUniq,
+          fields[field].fields
+        );
+    }
+    return fields;
+  }
+  changeSectionField(value, nameUniq) {
     let { item } = this.state;
-    if (!item.data.sections) return;
-    item.data.sections[sectionIndex].fields[fieldIndex].value = value;
+    if (!item?.data?.sections) return;
+    for (let i = 0; i < item.data.sections.length; i++) {
+      let fields = item.data.sections[i].fields;
+      item.data.sections[i].fields = this.setRecField(value, nameUniq, fields);
+    }
     this.setState({
       item,
     });
@@ -103,13 +149,68 @@ class Item extends Component {
       item,
     });
   }
-  buildText(field, index, sectionIndex) {
+  setLoading(nameUniq, value) {
+    let { loadings } = this.state;
+    if (value) {
+      loadings[nameUniq] = true;
+    } else {
+      delete loadings[nameUniq];
+    }
+    this.setState({
+      loadings,
+    });
+  }
+  setError(nameUniq, value) {
+    let { errors } = this.state;
+    if (value) {
+      errors[nameUniq] = value;
+    } else {
+      delete errors[nameUniq];
+    }
+    this.setState({
+      errors,
+    });
+  }
+  buildFields(field) {
     return (
       <div
-        key={index}
         className={[
           'spotter-section-field',
           'spotter-section-field__' + field.type,
+          field.width ? 'spotter-section-field__' + field.width : '',
+        ].join(' ')}
+      >
+        <div className="spotter-section-field-inner">
+          {field.fields &&
+            field.fields.map((field, index) => {
+              return this.switchField(field);
+            })}
+        </div>
+      </div>
+    );
+  }
+  buildDeliver(field) {
+    return (
+      <div
+        className={[
+          'spotter-section-field',
+          'spotter-section-field__' + field.type,
+          field.width ? 'spotter-section-field__' + field.width : '',
+        ].join(' ')}
+      >
+        <div className="spotter-section-field-inner">
+          <div></div>
+        </div>
+      </div>
+    );
+  }
+  buildText(field) {
+    return (
+      <div
+        className={[
+          'spotter-section-field',
+          'spotter-section-field__' + field.type,
+          field.width ? 'spotter-section-field__' + field.width : '',
         ].join(' ')}
       >
         <label>
@@ -119,7 +220,7 @@ class Item extends Component {
               type="text"
               value={field.value}
               onChange={(e) => {
-                this.changeSectionField(e.target.value, index, sectionIndex);
+                this.changeSectionField(e.target.value, field.nameUniq);
               }}
             />
           </div>
@@ -127,71 +228,129 @@ class Item extends Component {
       </div>
     );
   }
-  buildFile(field, index, sectionIndex) {
+  buildFile(field) {
+    let { loadings, errors } = this.state,
+      isLoading = loadings[field.nameUniq],
+      preview =
+        field?.value?.thumb ||
+        field?.value?.large ||
+        field?.value?.full ||
+        false;
     return (
       <div
+        style={{
+          maxWidth: field.maxWidth ? field.maxWidth + 'px' : '100%',
+        }}
         className={[
           'spotter-section-field',
           'spotter-section-field__' + field.type,
+          field.width ? 'spotter-section-field__' + field.width : '',
+          isLoading ? 'spotter-section-field__loading' : '',
         ].join(' ')}
       >
-        {field?.value?.thumb && <img src={field.value.thumb} />}
-        <input
-          type={field.type}
-          name={field.name}
-          onChange={(event) => {
-            let { values } = this.state;
-            let filesObject = [],
-              files = event.target.files;
-            new Promise((resolve, reject) => {
-              if (!files.length) resolve(filesObject);
-              for (let i = 1; i <= files.length; i++) {
-                let file = files[i - 1];
+        <div className="spotter-section-field-inner">
+          <div className="spotter-section-field-label">{field.label}</div>
+          <div
+            className={[
+              'spotter-section-field-control',
+              !preview ? 'spotter-section-field-control__empty' : '',
+            ].join(' ')}
+          >
+            <div className="spotter-section-field-control-loader"></div>
+            <button
+              className={[
+                'spotter-section-field-control-clear',
+                preview && !isLoading
+                  ? 'spotter-section-field-control-clear__show'
+                  : '',
+              ].join(' ')}
+              onClick={(e) => {
+                this.changeSectionField('', field.nameUniq);
+              }}
+            ></button>
+            <label for={field.nameUniq}>
+              {preview && (
+                <img
+                  src={getSiteUrl() + preview}
+                  onError={(event) => {
+                    event.target.src =
+                      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAMAAAAL34HQAAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAelQTFRF/////7+//wAA/39//0BA/6qq/2Ji/zMz/1hY/yYm/8PD/2pq/zk5/6Gh/5CQ/5aW/wcH/29v/87O//X1/6ys/9HR/9jY/4eH/3p6/2Zm/z09/wsL/9PT/8zM/6+v/7y8//Dw/x4e/xsb/4WF/xIS/09P/2Rk/zc3/11d/ysr/2ho/05O/0tL/3h4/0ZG/xwc/1xc/5+f/9LS/zU1/3Fx/83N/wYG/62t/5ub/3R0/5eX/7m5/yAg/0ND/+Pj/zAw/w8P/7Gx//r6/2tr/0dH/9bW/+7u/9XV/+rq/+3t/y4u/wkJ/8/P/wIC/01N/7u7/5yc/x0d/1lZ/3l5/2xs/w0N/2Bg/xAQ/w4O/1JS/46O/7W1/1tb/5GR/3V1/xgY/56e/7i4/2Nj/1VV/4mJ/3Bw/6Oj/9zc/+/v/6am/9nZ/6Ki/yQk/xcX/93d/7Oz/1FR/4+P//Pz/8XF//j4/0hI/5OT/+bm/xoa/wgI/yMj/7e3/+vr/0RE/1NT/zo6/4aG/wwM/0pK//f3/8jI/8TE/ycn/52d/+fn/0VF/4uL/8vL/7a2/9ra//Hx/9vb/ykp/2lp/5qa//Ly/5mZ/+Li/8rK/xER/x8f/15e/8fH/21t/3Nz/1pa/7S0/1BQ/+jo//n5/9/fH7RLjwAABBlJREFUeJztmYl7E0UYh2d/O0lbmtLaUm5LuVrCoWALLRCkhWKglFOxCFqVw1agBeQWsBSRU0BFvFBA/1Jnd2Y2M5Ok1Pjk8PF7n4fk25lvd95sd2Z3PxgjCIIgCIIgCIIgCIIgCIIgCIIgCIIgSo9nUG4XA2Twy+1iAHBNZWlVkk3Ef0PL55zF4lWiMYj86pqwe1ptAlXxukyK7iiZFnhMXv4imq4mQn2DnBOv6ZTpRZ8h2VqINzYx34hmAPFmNnMWMNtOKapWNBO9cEzM0YI6mot4+F2PefOtjqJqRSit1yMtGbUAC8KgdWF4ujIpRdXyzVXexyKmtVS0GEtU01K0WSnF1TI3fbS70TIkVdNyrLBSSqnF3WglEqppFd6wUsqqNRtvqqbVWFY5WmuAt2TUgc7K0Vq7DqvCoAvorhwtth7YIL42prDJ7iiqVgTPo/V2B7DZTwA9vZWkxbZsDfv7trkd5eadbV56e7klCIIgiP8bPN974Y45/TsB5ol/goFdu1pLaJVfa7d4vBDv2VoLaC2hVV6tPfJFjnk8fK6oFK292GduVoqW8/Q1uVZYeNlfszP5rm6Z9h4/kHy/zslbEN88eDD5waHDap8Qj0ePgh/2I8U/8pTWUN/Bj9u7LVnOM8UCW+uTeBUStZ+6vyEmHzmrZYNddNHUm/XJ6Herq5exdqMKILSOZNcyufFwa13y24+qxmOOFo43NqXbgM+C7aDo0tg0rIsuihHxoPz5CRGczKl1CqNdY2zs9BmlNXh2+ItzHDXnnZHMnbTWBey7OJM1i/GbrWT1o3ZjbvDlFF0UA2oW2QPoEc6iYa1sGJbn5XQQX7qMGa/WqsPgQNgcC1/EM8lXLjF57C/F51Wj6DKUyUpbtRdH6xrU66GE47oMvrJOeB6tcdxQ/RNIm8k1MjiMBvF50ii63MxkfZ1Cn38rj9Y3wK1MqtCS55sNYeWrtQYRU/2noih7iENG0SVlHLP3trgo2ztjufa5A9y1tHzn0JNojZkzwc9OVtmLjaLLhHnQaxuql4g97+XY5z5gXtv/SOuBUWPk+bX2GkWXcWYz0hJ3FoiWcJ9vgYeFaj1S88PF0Woxii5t2dnLw3nRrf++x8J9HgNdhWqx73B/Clpu0cXBwzzx2Qs1aXrkCP0YLVjre/RMQcstumidH56oITtYuCIFI6cTasH+UVwgT4PgJ33zmboW+xnjcoVKd06iFRRdkrVcF120Fn5Z0ebfTEFOYrEG3zvO0aNX+WrgAPd/3YQCtH4DJs48+30/1zeynFpO0UVrqVvaH8/l9g0Rr0uko3viwIvRoDtZgJYeEEdjbFJGHp5rfpnV6nneiSfR1qP0gz/t/r8K/9/P3AMSBEEQBEEQBEEQBEEQBEEQBEEQBEEQ/4K/AYvQd0iA7TysAAAAAElFTkSuQmCC';
+                  }}
+                />
+              )}
+            </label>
+          </div>
+          <input
+            disabled={isLoading}
+            type={field.type}
+            name={field.name}
+            id={field.nameUniq}
+            onChange={(event) => {
+              let { values } = this.state;
+              let file = event.target.files[0],
+                { fileTypes = [] } = field,
+                fileResult = {};
+              if (!file) return;
+              new Promise((resolve, reject) => {
+                this.setLoading(field.nameUniq, true);
+                this.setError(field.nameUniq, false);
+                if (fileTypes.length && fileTypes.indexOf(file.type) < 0) {
+                  event.target.value = '';
+                  reject(fileTypes.join(', ') + ' types only');
+                }
                 let reader = new FileReader();
                 reader.readAsBinaryString(file);
                 reader.onload = function () {
                   let base64 = btoa(reader.result);
-                  filesObject.push({
+                  fileResult = {
                     name: file.name,
                     data: 'data:' + file.type + ';base64,' + base64,
                     type: file.type,
                     size: file.size,
-                  });
-                  if (i === files.length) {
-                    setTimeout(() => {
-                      resolve(filesObject);
-                    }, 0);
-                  }
+                  };
+                  resolve(fileResult);
                 };
-              }
-            }).then((resp) => {
-              uploadImage(resp)
+              })
                 .then((resp) => {
-                  console.log(resp);
-                  this.changeSectionField(resp[0], index, sectionIndex);
+                  uploadImage(resp)
+                    .then((resp) => {
+                      this.changeSectionField(resp, field.nameUniq);
+                      this.setLoading(field.nameUniq, false);
+                    })
+                    .catch((error) => {});
                 })
                 .catch((error) => {
-                  console.log(error);
+                  this.setLoading(field.nameUniq, false);
+                  this.setError(field.nameUniq, error);
                 });
-            });
-          }}
-        />
+            }}
+          />
+          {errors[field.nameUniq] && (
+            <div className="spotter-section-field-error">
+              {errors[field.nameUniq]}
+            </div>
+          )}
+        </div>
       </div>
     );
   }
-  switchField(field, index, sectionIndex) {
+  switchField(field) {
     switch (field.type) {
       case 'text':
-        return this.buildText(field, index, sectionIndex);
+        return this.buildText(field);
+        break;
+      case 'fields':
+        return this.buildFields(field);
         break;
       case 'switch':
         break;
       case 'textarea':
         break;
       case 'file':
-        return this.buildFile(field, index, sectionIndex);
+        return this.buildFile(field);
         break;
       case 'deliver':
+        return this.buildDeliver(field);
         break;
       default:
         return null;
@@ -199,9 +358,6 @@ class Item extends Component {
   }
   save() {
     let { item } = this.state;
-    item.data.sections.forEach((section, index) => {
-      delete item.data.sections[index].opened;
-    });
     saveItem(item);
   }
   remove() {
@@ -233,7 +389,7 @@ class Item extends Component {
   }
   render() {
     this.sectionsTitles = [];
-    let { item, id, newSectionIndex } = this.state,
+    let { item, id, newSectionIndex, opened } = this.state,
       { title = '', data = false } = item;
     if (!data) return null;
     return (
@@ -333,7 +489,7 @@ class Item extends Component {
                               }
                               className="spotter-section-inner"
                               onClick={() => {
-                                this.toggleFields(sectionIndex);
+                                this.toggleFields(section.nameUniq);
                                 let sectionTitles = this.sectionsTitles;
                                 sectionTitles &&
                                   sectionTitles.forEach((section) => {
@@ -389,7 +545,7 @@ class Item extends Component {
                                     className={[
                                       'spotter-section-header-action',
                                       'spotter-section-header-action__arrow',
-                                      section.opened
+                                      opened[section.nameUniq]
                                         ? 'spotter-section-header-action__arrow__active'
                                         : '',
                                     ].join(' ')}
@@ -404,18 +560,14 @@ class Item extends Component {
                                 }}
                                 className={[
                                   'spotter-section-fields',
-                                  section.opened
+                                  opened[section.nameUniq]
                                     ? 'spotter-section-fields__opened'
                                     : '',
                                 ].join(' ')}
                               >
                                 <div className="spotter-section-fields-inner">
                                   {section.fields.map((field, index) => {
-                                    return this.switchField(
-                                      field,
-                                      index,
-                                      sectionIndex
-                                    );
+                                    return this.switchField(field);
                                   })}
                                 </div>
                               </div>
