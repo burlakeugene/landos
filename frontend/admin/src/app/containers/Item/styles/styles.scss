@@ -316,14 +316,15 @@
   &-label {
     font-size: 14px;
     line-height: 1em;
-    & + .spotter-section-field-control{
+    & + .spotter-section-field-control {
       margin-top: 10px;
     }
   }
   &-control {
     display: block;
     position: relative;
-    input {
+    input,
+    textarea {
       width: 100%;
       margin: 0;
       background: #fff;
@@ -332,11 +333,15 @@
       min-height: auto;
       line-height: 1em;
       border: none;
-      padding: 5px 10px;
-      &:focus{
+      padding: 10px;
+      resize: none;
+      &:focus {
         outline: none;
         box-shadow: none;
       }
+    }
+    textarea {
+      height: 100px;
     }
     &-loader {
       width: 30px;
@@ -393,6 +398,59 @@
   }
   &__fields {
     padding: 0;
+  }
+  &__switch {
+    .spotter-section-field-control {
+      display: flex;
+      vertical-align: middle;
+      border-radius: 3px;
+      overflow: hidden;
+      border: 1px solid #999;
+      &-option {
+        color: #000;
+        font-size: 12px;
+        text-align: center;
+        padding: 12px 0px;
+        margin: 0;
+        flex: 1;
+        transition: all 0.3s;
+        background-color: #fff;
+        border: none;
+        line-height: 1em;
+        border-right: 1px solid #999;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        cursor: pointer;
+        &:last-child {
+          border-right: none;
+        }
+        &:focus {
+          outline: none;
+        }
+        &__active {
+          background-color: #27ca5d;
+          color: #fff;
+        }
+      }
+    }
+  }
+  &__textarea {
+    .spotter-section-field-control {
+      &__textarea {
+        &-html {
+          font-size: 14px;
+          .rdw-editor-main {
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 0 0 5px 5px;
+          }
+          .rdw-editor-toolbar {
+            margin-bottom: 1px;
+            border-radius: 5px 5px 0 0;
+          }
+        }
+      }
+    }
   }
   &__file {
     input {
@@ -518,5 +576,34 @@
         }
       }
     }
+  }
+}
+
+.spotter-tab {
+  &s {
+    margin-bottom: 10px;
+    font-size: 0;
+  }
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 10px;
+  border-radius: 5px;
+  padding: 15px;
+  background-color: #fff;
+  color: #000;
+  border: none;
+  transition: all 0.3s;
+  text-align: center;
+  font-size: 16px;
+  cursor: pointer;
+  line-height: 1em;
+  height: auto;
+  &:focus{
+    outline: none;
+    box-shadow: none;
+  }
+  &:hover, &__active{
+    background-color: #27ca5d;
+    color: #fff;
   }
 }

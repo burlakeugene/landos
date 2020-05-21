@@ -14,7 +14,7 @@ class Preloader extends Component {
             <path
               d="M10,50 a1,1 0 0,0 80,0"
               fill="transparent"
-              stroke-width="7px"
+              strokeWidth="7px"
             >
               <animateTransform
                 attributeName="transform"

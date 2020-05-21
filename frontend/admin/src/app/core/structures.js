@@ -3,6 +3,8 @@ export const getItemDefault = () => {
     title: 'New page',
     data: {
       sections: [],
+      modals: [],
+      forms: []
     },
   };
 };
@@ -38,6 +40,7 @@ export const getSectionsStructure = () => {
               },
               {
                 type: 'switch',
+                label: 'Title text align',
                 name: 'titleAlign',
                 value: 'left',
                 options: [
@@ -57,33 +60,44 @@ export const getSectionsStructure = () => {
               },
             ],
           },
-          { type: 'deliver' },
           {
-            type: 'textarea',
-            name: 'description',
-            value: '',
-          },
-          {
-            type: 'switch',
-            name: 'descriptionAlign',
-            value: 'left',
-            options: [
+            type: 'fields',
+            width: 'third',
+            fields: [
               {
+                type: 'textarea',
+                html: true,
+                name: 'description',
+                label: 'Content',
+                value: '',
+              },
+              {
+                type: 'deliver'
+              },
+              {
+                type: 'switch',
+                label: 'Content text align',
+                name: 'descriptionAlign',
                 value: 'left',
-                text: 'Left',
-              },
-              {
-                value: 'center',
-                text: 'Center',
-              },
-              {
-                value: 'right',
-                text: 'Right',
+                options: [
+                  {
+                    value: 'left',
+                    text: 'Left',
+                  },
+                  {
+                    value: 'center',
+                    text: 'Center',
+                  },
+                  {
+                    value: 'right',
+                    text: 'Right',
+                  },
+                ],
               },
             ],
-          },
+          }
         ],
-      },
+      }
     ],
     displayedList: ['hero'],
   };
