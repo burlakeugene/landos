@@ -217,7 +217,6 @@ class Item extends Component {
     let { loadings } = this.state,
       isLoading = loadings[field.nameUniq],
       preview =
-        field?.value?.thumb ||
         field?.value?.large ||
         field?.value?.full ||
         false;

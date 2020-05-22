@@ -23,7 +23,6 @@ export const getSectionsStructure = () => {
             label: 'Background image',
             value: '',
             width: 'third',
-            maxWidth: 170
           },
           {
             type: 'fields',
