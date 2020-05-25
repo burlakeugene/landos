@@ -294,11 +294,11 @@ function upload_files(WP_REST_Request $req){
 	wp_update_attachment_metadata( $attach_id, $attach_data );
 	$full = wp_get_attachment_image_src($attach_id, 'full')[0];
 	$large = wp_get_attachment_image_src($attach_id, 'large')[0];
-	$thumbnail = wp_get_attachment_image_src($attach_id, 'thumbnail')[0];
+	$medium = wp_get_attachment_image_src($attach_id, 'medium')[0];
 	$result = array(
 		'full' => $full ? generate_relative_path($full) : false,
 		'large' => $large ? generate_relative_path($large) : false,
-		'thumb' => $thumbnail ? generate_relative_path($thumbnail) : false
+		'medium' => $medium ? generate_relative_path($medium) : false
 	);
 	return $result;
 }

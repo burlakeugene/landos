@@ -26,11 +26,12 @@ export const getSectionsStructure = () => {
           },
           {
             type: 'fields',
+            name: 'title',
             width: 'third',
             fields: [
               {
                 type: 'text',
-                name: 'title',
+                name: 'titleText',
                 label: 'Title',
                 value: '',
               },
@@ -61,12 +62,13 @@ export const getSectionsStructure = () => {
           },
           {
             type: 'fields',
+            name: 'description',
             width: 'third',
             fields: [
               {
                 type: 'textarea',
                 html: true,
-                name: 'description',
+                name: 'descriptionText',
                 label: 'Content',
                 value: '',
               },

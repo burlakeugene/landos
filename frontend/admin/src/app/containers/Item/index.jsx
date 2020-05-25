@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { loaderOff, loaderOn, messagePush } from 'actions/Status';
 import { getItem } from 'actions/Items';
 import Button from 'components/Button';
-import { setRemovingItem, saveItem, uploadImage } from 'actions/Items';
+import { setRemovingItem, saveItem, uploadImage, generateUniqSection } from 'actions/Items';
 import history from 'core/history';
 import Modal from 'burlak-react-modal';
 import { getSectionsStructure, getItemDefault } from 'core/structures';
@@ -78,32 +78,9 @@ class Item extends Component {
       newSectionIndex: false,
     });
   }
-  generateHash() {
-    let rand = window.Math.floor(window.Math.random() * 0x10000000000000),
-      result;
-    (rand = rand.toString(16).substring(1)),
-      (result = rand.split('').splice(0, 10).join(''));
-    return result;
-  }
-  generateUniqFields(fields) {
-    for (let field in fields) {
-      fields[field]['nameUniq'] =
-        fields[field].name + '_' + this.generateHash();
-      if (fields[field].fields)
-        fields[field].fields = this.generateUniqFields(fields[field].fields);
-    }
-    return fields;
-  }
-  generateUniqSection(section) {
-    section['nameUniq'] = section.name + '_' + this.generateHash();
-    if (section.fields) {
-      section.fields = this.generateUniqFields(section.fields);
-    }
-    return section;
-  }
   addSection(section) {
     let { newSectionIndex, item } = this.state;
-    section = this.generateUniqSection(section);
+    section = generateUniqSection(section);
     item.data.sections.splice(newSectionIndex, 0, section);
     this.setState({
       item,
@@ -216,10 +193,7 @@ class Item extends Component {
   buildFile(field) {
     let { loadings } = this.state,
       isLoading = loadings[field.nameUniq],
-      preview =
-        field?.value?.large ||
-        field?.value?.full ||
-        false;
+      preview = field?.value?.large || field?.value?.full || false;
     return (
       <>
         <div
