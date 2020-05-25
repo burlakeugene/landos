@@ -34,6 +34,10 @@ class Item extends Component {
             text: 'Sections',
           },
           {
+            name: 'modules',
+            text: 'Modules',
+          },
+          {
             name: 'modals',
             text: 'Modals',
           },

@@ -4,7 +4,8 @@ export const getItemDefault = () => {
     data: {
       sections: [],
       modals: [],
-      forms: []
+      forms: [],
+      modules: []
     },
   };
 };
