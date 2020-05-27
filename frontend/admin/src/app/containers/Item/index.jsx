@@ -2,7 +2,12 @@ import React, { Component } from 'react';
 import { loaderOff, loaderOn, messagePush } from 'actions/Status';
 import { getItem } from 'actions/Items';
 import Button from 'components/Button';
-import { setRemovingItem, saveItem, uploadImage, generateUniqSection } from 'actions/Items';
+import {
+  setRemovingItem,
+  saveItem,
+  uploadImage,
+  generateUniqSection,
+} from 'actions/Items';
 import history from 'core/history';
 import Modal from 'burlak-react-modal';
 import { getSectionsStructure, getItemDefault } from 'core/structures';
@@ -82,9 +87,10 @@ class Item extends Component {
       newSectionIndex: false,
     });
   }
-  addSection(section) {
-    let { newSectionIndex, item } = this.state;
-    section = generateUniqSection(section);
+  addSection(name) {
+    let { newSectionIndex, item } = this.state,
+      section = generateUniqSection(name);
+    if (!section) return;
     item.data.sections.splice(newSectionIndex, 0, section);
     this.setState({
       item,
@@ -110,25 +116,31 @@ class Item extends Component {
       item,
     });
   }
-  setRecField(value, nameUniq, fields) {
+  setRecField(value, name, fields) {
     for (let field in fields) {
-      if (fields[field]['nameUniq'] === nameUniq) fields[field].value = value;
+      if (fields[field]['name'] === name) fields[field].value = value;
       if (fields[field].fields)
         fields[field].fields = this.setRecField(
           value,
-          nameUniq,
+          name,
           fields[field].fields
         );
     }
     return fields;
   }
-  changeSectionField(value, nameUniq) {
+  changeSectionField(value, field) {
     let { item } = this.state;
     if (!item?.data?.sections) return;
-    for (let i = 0; i < item.data.sections.length; i++) {
-      let fields = item.data.sections[i].fields;
-      item.data.sections[i].fields = this.setRecField(value, nameUniq, fields);
-    }
+    let sectionIndex = item.data.sections.findIndex((section) => {
+      return section.nameUniq === field.sectionNameUniq;
+    });
+    if(sectionIndex < 0) return;
+    let fields = item.data.sections[sectionIndex].fields;
+    item.data.sections[sectionIndex].fields = this.setRecField(
+      value,
+      field.name,
+      item.data.sections[sectionIndex].fields
+    );
     this.setState({
       item,
     });
@@ -160,6 +172,9 @@ class Item extends Component {
       loadings,
     });
   }
+  getFieldNameUniq = (field) => {
+    return field.sectionNameUniq+'_'+field.name;
+  }
   setError(nameUniq, value) {
     let { errors } = this.state;
     if (value) {
@@ -188,7 +203,7 @@ class Item extends Component {
           type="text"
           value={field.value}
           onChange={(e) => {
-            this.changeSectionField(e.target.value, field.nameUniq);
+            this.changeSectionField(e.target.value, field);
           }}
         />
       </div>
@@ -196,7 +211,7 @@ class Item extends Component {
   }
   buildFile(field) {
     let { loadings } = this.state,
-      isLoading = loadings[field.nameUniq],
+      isLoading = loadings[this.getFieldNameUniq(field)],
       preview = field?.value?.large || field?.value?.full || false;
     return (
       <>
@@ -215,10 +230,10 @@ class Item extends Component {
                 : '',
             ].join(' ')}
             onClick={(e) => {
-              this.changeSectionField('', field.nameUniq);
+              this.changeSectionField('', field);
             }}
           ></button>
-          <label htmlFor={field.nameUniq}>
+          <label htmlFor={this.getFieldNameUniq(field)}>
             {preview && (
               <img
                 src={getSiteUrl() + preview}
@@ -234,7 +249,7 @@ class Item extends Component {
           disabled={isLoading}
           type={field.type}
           name={field.name}
-          id={field.nameUniq}
+          id={this.getFieldNameUniq(field)}
           onChange={(event) => {
             let { values } = this.state;
             let file = event.target.files[0],
@@ -242,8 +257,8 @@ class Item extends Component {
               fileResult = {};
             if (!file) return;
             new Promise((resolve, reject) => {
-              this.setLoading(field.nameUniq, true);
-              this.setError(field.nameUniq, false);
+              this.setLoading(this.getFieldNameUniq(field), true);
+              this.setError(this.getFieldNameUniq(field), false);
               if (fileTypes.length && fileTypes.indexOf(file.type) < 0) {
                 event.target.value = '';
                 reject(fileTypes.join(', ') + ' types only');
@@ -264,14 +279,14 @@ class Item extends Component {
               .then((resp) => {
                 uploadImage(resp)
                   .then((resp) => {
-                    this.changeSectionField(resp, field.nameUniq);
-                    this.setLoading(field.nameUniq, false);
+                    this.changeSectionField(resp, field);
+                    this.setLoading(this.getFieldNameUniq(field), false);
                   })
                   .catch((error) => {});
               })
               .catch((error) => {
-                this.setLoading(field.nameUniq, false);
-                this.setError(field.nameUniq, error);
+                this.setLoading(this.getFieldNameUniq(field), false);
+                this.setError(this.getFieldNameUniq(field), error);
               });
           }}
         />
@@ -292,7 +307,7 @@ class Item extends Component {
                     : '',
                 ].join(' ')}
                 onClick={() => {
-                  this.changeSectionField(option.value, field.nameUniq);
+                  this.changeSectionField(option.value, field);
                 }}
               >
                 {option.text}
@@ -319,13 +334,13 @@ class Item extends Component {
           <ContentEditor
             value={field.value}
             onChange={(value) => {
-              this.changeSectionField(value, field.nameUniq);
+              this.changeSectionField(value, field);
             }}
           />
         ) : (
           <textarea
             onChange={(event) => {
-              this.changeSectionField(event.target.value, field.nameUniq);
+              this.changeSectionField(event.target.value, field);
             }}
           >
             {field.value}
@@ -336,8 +351,8 @@ class Item extends Component {
   }
   switchField(field) {
     let { loadings, errors } = this.state,
-      isLoading = loadings[field.nameUniq],
-      error = errors[field.nameUniq];
+      isLoading = loadings[this.getFieldNameUniq(field)],
+      error = errors[this.getFieldNameUniq(field)];
     return (
       <div
         style={{
@@ -473,7 +488,7 @@ class Item extends Component {
                       key={index}
                       className="spotter-sections-choose-item"
                       onClick={() => {
-                        this.addSection(section);
+                        this.addSection(section.name);
                       }}
                     >
                       <div className="spotter-sections-choose-item-image">

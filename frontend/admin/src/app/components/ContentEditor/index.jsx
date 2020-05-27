@@ -12,7 +12,6 @@ class MyEditor extends React.Component {
       editorState: EditorState.createEmpty(),
     };
     const html = props.value || '';
-    console.log(html);
     const contentBlock = htmlToDraft(html);
     if (contentBlock) {
       const contentState = ContentState.createFromBlockArray(

@@ -62,7 +62,7 @@ export const addItem = (item) => {
 
 export const saveItem = (item) => {
   item = JSON.parse(JSON.stringify(item));
-  item = clearData(item);
+  item = getClearData(item);
   if (item.data) item.data = JSON.stringify(item.data);
   loaderOn();
   let action = item.id ? editItem : addItem;
@@ -177,51 +177,48 @@ export const uploadImage = (file) => {
 };
 
 export const getClearFields = (fields) => {
-  let newFields = [];
+  let newFields = {};
   for (let field in fields) {
-    if (!fields[field].name) continue;
-    let newField = {};
-    if (fields[field].value) newField.value = fields[field].value;
-    if (fields[field].name) newField.name = fields[field].name;
-    if (fields[field].fields)
-      newField.fields = getClearFields(fields[field].fields);
-    newFields.push(newField);
+    if (fields[field].fields) {
+      newFields = { ...newFields, ...getClearFields(fields[field].fields) };
+    } else {
+      if (fields[field].name) {
+        newFields = {
+          ...newFields,
+          [fields[field].name]: {
+            name: fields[field].name,
+            value: fields[field].value,
+          },
+        };
+      }
+    }
   }
   return newFields;
 };
 
-export const getClearData = (data) => {
-  if (data) {
-    for (let i = 0; i < data.length; i++) {
-      delete data[i].nameUniq;
-      data[i].fields = getClearFields(data[i].fields);
-    }
-  }
-  return data;
-};
-
-export const clearData = (item) => {
+export const getClearData = (item) => {
   if (item?.data?.sections) {
-    item.data.sections = getClearData(item.data.sections);
+    for (let i = 0; i < item.data.sections.length; i++) {
+      item.data.sections[i].fields = getClearFields(item.data.sections[i].fields);
+    }
   }
   return item;
 };
 
-export const mergeFields = (savedFields, structureFields) => {
-  console.log(savedFields, structureFields);
-  for (let index in structureFields) {
-    let savedField = savedFields.find((field) => {
-      return field.name === structureFields[index].name;
-    });
-    if (savedField?.value) structureFields[index].value = savedField.value;
-    if (structureFields[index].fields) {
-      structureFields[index].fields = mergeFields(
-        savedField.fields,
-        structureFields[index].fields
+export const mergeFields = (saved, structure) => {
+  for (let index in structure.fields) {
+    structure.fields[index].sectionNameUniq = saved.nameUniq;
+    if(saved.fields[structure.fields[index].name]){
+      structure.fields[index].value = saved.fields[structure.fields[index].name].value;
+    }
+    if (structure.fields[index].fields) {
+      structure.fields[index].fields = mergeFields(
+        saved,
+        structure.fields[index]
       );
     }
   }
-  return structureFields;
+  return structure.fields;
 };
 
 export const mergeWithStructure = (item) => {
@@ -230,19 +227,14 @@ export const mergeWithStructure = (item) => {
     let newSections = [];
     for (let section in item.data.sections) {
       let currentSection = item.data.sections[section],
-        sectionStructure = sectionsStructure.list.find((section) => {
-          return section.name === currentSection.name;
-        });
-      sectionStructure = JSON.parse(JSON.stringify(sectionStructure));
-      if (
-        sectionsStructure.displayedList.indexOf(currentSection.name) >= 0 &&
-        sectionStructure
-      ) {
+        sectionStructure = getSectionsStructure(currentSection.name);
+      if(sectionStructure){
+        sectionStructure = JSON.parse(JSON.stringify(sectionStructure));
         let newSection = {
           ...currentSection,
-          fields: mergeFields(currentSection.fields, sectionStructure.fields),
+          fields: mergeFields(currentSection, sectionStructure),
         };
-        newSections.push(generateUniqSection(newSection));
+        newSections.push(newSection);
       }
     }
     item.data.sections = newSections;
@@ -258,19 +250,21 @@ export const generateHash = () => {
   return result;
 };
 
-export const generateUniqFields = (fields) => {
+export const prepareFields = (sectionNameUniq, fields) => {
   for (let field in fields) {
-    fields[field]['nameUniq'] = fields[field].name + '_' + generateHash();
+    fields[field]['sectionNameUniq'] = sectionNameUniq;
     if (fields[field].fields)
-      fields[field].fields = generateUniqFields(fields[field].fields);
+      fields[field].fields = prepareFields(
+        sectionNameUniq,
+        fields[field].fields
+      );
   }
   return fields;
 };
 
-export const generateUniqSection = (section) => {
-  section['nameUniq'] = section.name + '_' + generateHash();
-  if (section.fields) {
-    section.fields = generateUniqFields(section.fields);
-  }
-  return section;
+export const generateUniqSection = (name) => {
+  let section = getSectionsStructure(name);
+  section.nameUniq = name + '_' + generateHash();
+  section.fields = prepareFields(section.nameUniq, section.fields);
+  return section || false;
 };
