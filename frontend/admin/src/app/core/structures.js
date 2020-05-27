@@ -19,46 +19,81 @@ export const getSectionsStructure = (name) => {
           title: 'Hero Image',
           fields: [
             {
-              type: 'file',
-              fileTypes: ['image/png', 'image/jpeg'],
-              name: 'background',
-              label: 'Background image',
-              value: '',
-              width: 'third',
-            },
-            {
               type: 'fields',
-              width: 'third',
+              width: 'seventh',
               fields: [
                 {
-                  type: 'text',
-                  name: 'titleText',
-                  label: 'Title',
+                  type: 'file',
+                  fileTypes: ['image/png', 'image/jpeg'],
+                  name: 'background',
+                  label: 'Background image',
                   value: '',
+                  width: 'half',
+                },
+                {
+                  type: 'fields',
+                  width: 'half',
+                  fields: [
+                    {
+                      type: 'text',
+                      name: 'titleText',
+                      label: 'Title',
+                      value: '',
+                    },
+                    {
+                      type: 'deliver',
+                    },
+                    {
+                      type: 'switch',
+                      label: 'Title text align',
+                      name: 'titleAlign',
+                      value: 'left',
+                      options: [
+                        {
+                          value: 'left',
+                          text: 'Left',
+                        },
+                        {
+                          value: 'center',
+                          text: 'Center',
+                        },
+                        {
+                          value: 'right',
+                          text: 'Right',
+                        },
+                      ],
+                    },
+                  ],
                 },
                 {
                   type: 'deliver',
                 },
                 {
-                  type: 'switch',
-                  label: 'Title text align',
-                  name: 'titleAlign',
-                  value: 'left',
-                  options: [
-                    {
-                      value: 'left',
-                      text: 'Left',
-                    },
-                    {
-                      value: 'center',
-                      text: 'Center',
-                    },
-                    {
-                      value: 'right',
-                      text: 'Right',
-                    },
-                  ],
-                },
+                  type: 'fields',
+                  fields: [{
+                    type: 'text',
+                    name: 'buttonText',
+                    label: 'Button text',
+                    value: '',
+                    width: 'half'
+                  }, {
+                    type: 'select',
+                    name: 'buttonType',
+                    label: 'Button type',
+                    width: 'half',
+                    value: '',
+                    options: [{
+                      value: 'link',
+                      text: 'Link'
+                    }, {
+                      value: 'scroller',
+                      text: 'Scroller'
+                    }, {
+                      value: 'modal',
+                      text: 'Call modal'
+                    }]
+                  }]
+                }
               ],
             },
             {

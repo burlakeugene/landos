@@ -134,7 +134,7 @@ class Item extends Component {
     let sectionIndex = item.data.sections.findIndex((section) => {
       return section.nameUniq === field.sectionNameUniq;
     });
-    if(sectionIndex < 0) return;
+    if (sectionIndex < 0) return;
     let fields = item.data.sections[sectionIndex].fields;
     item.data.sections[sectionIndex].fields = this.setRecField(
       value,
@@ -173,8 +173,8 @@ class Item extends Component {
     });
   }
   getFieldNameUniq = (field) => {
-    return field.sectionNameUniq+'_'+field.name;
-  }
+    return field.sectionNameUniq + '_' + field.name;
+  };
   setError(nameUniq, value) {
     let { errors } = this.state;
     if (value) {
@@ -318,9 +318,6 @@ class Item extends Component {
     );
   }
   buildTextarea(field) {
-    {
-      /* <ContentEditor value={'<strong>dsadas</strong>'} /> */
-    }
     return (
       <div
         className={[
@@ -346,6 +343,33 @@ class Item extends Component {
             {field.value}
           </textarea>
         )}
+      </div>
+    );
+  }
+  buildSelect(field) {
+    let options = field.options;
+    return (
+      <div className={['spotter-section-field-control'].join(' ')}>
+        <select
+          onChange={(event) => {
+            this.changeSectionField(event.target.value, field);
+          }}
+        >
+          <option></option>
+          {options &&
+            options.map((option, index) => {
+              return (
+                <option
+                  disabled={option.disabled}
+                  key={index}
+                  value={option.value}
+                  selected={option.value === field.value}
+                >
+                  {option.text}
+                </option>
+              );
+            })}
+        </select>
       </div>
     );
   }
@@ -378,6 +402,9 @@ class Item extends Component {
               break;
             case 'switch':
               return this.buildSwitch(field);
+              break;
+            case 'select':
+              return this.buildSelect(field);
               break;
             case 'textarea':
               return this.buildTextarea(field);
