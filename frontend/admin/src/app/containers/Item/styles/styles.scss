@@ -313,12 +313,13 @@
   &_fourth {
     width: 25%;
   }
-  &__seventh{
+  &__seventh {
     width: 66.66666%;
   }
   &-label {
     font-size: 14px;
     line-height: 1em;
+    min-height: 14px;
     & + .spotter-section-field-control {
       margin-top: 10px;
     }
@@ -327,6 +328,7 @@
     display: block;
     position: relative;
     input,
+    select,
     textarea {
       width: 100%;
       margin: 0;
@@ -338,10 +340,23 @@
       border: none;
       padding: 10px;
       resize: none;
+      color: #000;
       &:focus {
         outline: none;
         box-shadow: none;
       }
+    }
+    select {
+      &:focus {
+        color: #000;
+      }
+      height: 41px;
+      background-image: url(./images/down.svg);
+      padding-right: 30px;
+      background-size: 15px 15px;
+      background-position: center center;
+      background-position-x: calc(100% - 10px);
+      background-repeat: no-repeat;
     }
     textarea {
       height: 100px;
@@ -385,6 +400,62 @@
         opacity: 1;
         visibility: visible;
         transform: scale(1);
+      }
+    }
+    &-checkbox {
+      font-size: 14px;
+      &-inner {
+        position: relative;
+        padding-left: 30px;
+      }
+      &-point {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        background-color: #fff;
+        position: absolute;
+        padding-left: 0;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        transition: all 0.3s;
+        overflow: hidden;
+        &:before {
+          content: '';
+          display: block;
+          position: absolute;
+          opacity: 0;
+          border-bottom: 2px solid #27ca5d;
+          border-right: 2px solid #27ca5d;
+          width: 30%;
+          height: 45%;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%) rotate(45deg);
+          transition: all 0.3s;
+          margin-top: -50%;
+        }
+      }
+      label {
+        display: inline-block;
+        input {
+          position: absolute;
+          opacity: 0;
+          visibility: hidden;
+          &:checked {
+            &:before {
+              display: none;
+            }
+            & + .spotter-section-field-control-checkbox-inner {
+              .spotter-section-field-control-checkbox-point {
+                &:before {
+                  opacity: 1;
+                  margin-top: -10%;
+                }
+              }
+            }
+          }
+        }
       }
     }
   }
@@ -601,11 +672,12 @@
   cursor: pointer;
   line-height: 1em;
   height: auto;
-  &:focus{
+  &:focus {
     outline: none;
     box-shadow: none;
   }
-  &:hover, &__active{
+  &:hover,
+  &__active {
     background-color: #27ca5d;
     color: #fff;
   }

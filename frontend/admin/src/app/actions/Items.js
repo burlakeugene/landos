@@ -196,20 +196,42 @@ export const getClearFields = (fields) => {
   return newFields;
 };
 
+export const getClearSection = (section) => {
+  section.fields = getClearFields(section.fields);
+  return section;
+};
+
 export const getClearData = (item) => {
   if (item?.data?.sections) {
     for (let i = 0; i < item.data.sections.length; i++) {
-      item.data.sections[i].fields = getClearFields(item.data.sections[i].fields);
+      item.data.sections[i] = getClearSection(item.data.sections[i]);
     }
   }
   return item;
 };
 
+export const findSectionByNameUniq = (nameUniq, item) => {
+  let section = false;
+  if (item?.data?.sections) {
+    for (let i = 0; i < item.data.sections.length; i++) {
+      if (item.data.sections[i].nameUniq === nameUniq) {
+        section = JSON.parse(JSON.stringify(item.data.sections[i]));
+      }
+    }
+  }
+  return section;
+};
+
+export const findSectionAndClear = (nameUniq, item) => {
+  return getClearSection(findSectionByNameUniq(nameUniq, item));
+};
+
 export const mergeFields = (saved, structure) => {
   for (let index in structure.fields) {
     structure.fields[index].sectionNameUniq = saved.nameUniq;
-    if(saved.fields[structure.fields[index].name]){
-      structure.fields[index].value = saved.fields[structure.fields[index].name].value;
+    if (saved.fields[structure.fields[index].name]) {
+      structure.fields[index].value =
+        saved.fields[structure.fields[index].name].value;
     }
     if (structure.fields[index].fields) {
       structure.fields[index].fields = mergeFields(
@@ -228,7 +250,7 @@ export const mergeWithStructure = (item) => {
     for (let section in item.data.sections) {
       let currentSection = item.data.sections[section],
         sectionStructure = getSectionsStructure(currentSection.name);
-      if(sectionStructure){
+      if (sectionStructure) {
         sectionStructure = JSON.parse(JSON.stringify(sectionStructure));
         let newSection = {
           ...currentSection,

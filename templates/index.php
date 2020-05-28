@@ -8,8 +8,11 @@
 <body>
   <?php
     $landing = get_landing();
-    print_r($landing);
+    $landing->data = json_decode($landing->data)
   ?>
+  <pre>
+    <?php print_r($landing) ?>
+  </pre>
   <?php wp_footer() ?>
 </body>
 </html>

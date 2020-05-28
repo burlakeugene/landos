@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { loaderOff, loaderOn, messagePush } from 'actions/Status';
-import { getItem } from 'actions/Items';
+import { getItem, findSectionAndClear } from 'actions/Items';
 import Button from 'components/Button';
 import {
   setRemovingItem,
@@ -373,10 +373,47 @@ class Item extends Component {
       </div>
     );
   }
+  buildBool(field) {
+    return (
+      <div className={['spotter-section-field-control'].join(' ')}>
+        <div className="spotter-section-field-control-checkbox">
+          <label>
+            <input
+              type="checkbox"
+              name={field.name}
+              checked={field.value}
+              onChange={(event) => {
+                this.changeSectionField(event.target.checked, field);
+              }}
+            />
+            <div className="spotter-section-field-control-checkbox-inner">
+              <div className="spotter-section-field-control-checkbox-point"></div>
+              {field.text && field.text}
+            </div>
+          </label>
+        </div>
+      </div>
+    );
+  }
   switchField(field) {
-    let { loadings, errors } = this.state,
+    let { loadings, errors, item } = this.state,
       isLoading = loadings[this.getFieldNameUniq(field)],
       error = errors[this.getFieldNameUniq(field)];
+    if (field.showConditions) {
+      let render = true;
+      for (let index in field.showConditions) {
+        let condition = field.showConditions[index],
+          section = findSectionAndClear(field.sectionNameUniq, item);
+        if (section?.fields && section.fields[condition.target]) {
+          if (condition.type === 'equal') {
+            if (section.fields[condition.target].value !== condition.value)
+              render = false;
+          }
+        }
+        if (!render) break;
+      }
+      if (!render) return null;
+    }
     return (
       <div
         style={{
@@ -414,6 +451,9 @@ class Item extends Component {
               break;
             case 'deliver':
               return this.buildDeliver(field);
+              break;
+            case 'bool':
+              return this.buildBool(field);
               break;
             default:
               return null;

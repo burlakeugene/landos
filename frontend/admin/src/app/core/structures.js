@@ -70,30 +70,66 @@ export const getSectionsStructure = (name) => {
                 },
                 {
                   type: 'fields',
-                  fields: [{
-                    type: 'text',
-                    name: 'buttonText',
-                    label: 'Button text',
-                    value: '',
-                    width: 'half'
-                  }, {
-                    type: 'select',
-                    name: 'buttonType',
-                    label: 'Button type',
-                    width: 'half',
-                    value: '',
-                    options: [{
-                      value: 'link',
-                      text: 'Link'
-                    }, {
-                      value: 'scroller',
-                      text: 'Scroller'
-                    }, {
-                      value: 'modal',
-                      text: 'Call modal'
-                    }]
-                  }]
-                }
+                  fields: [
+                    {
+                      type: 'text',
+                      name: 'buttonText',
+                      label: 'Button text',
+                      value: '',
+                      width: 'half',
+                    },
+                    {
+                      type: 'select',
+                      name: 'buttonType',
+                      label: 'Button type',
+                      width: 'half',
+                      value: '',
+                      options: [
+                        {
+                          value: 'link',
+                          text: 'Link',
+                        },
+                        {
+                          value: 'scroller',
+                          text: 'Scroller',
+                        },
+                        {
+                          value: 'modal',
+                          text: 'Call modal',
+                        },
+                      ],
+                    },
+                    {
+                      type: 'text',
+                      name: 'buttonLink',
+                      value: '',
+                      label: 'Button link',
+                      width: 'half',
+                      showConditions: [
+                        {
+                          target: 'buttonType',
+                          type: 'equal',
+                          value: 'link',
+                        },
+                      ],
+                    },
+                    {
+                      type: 'bool',
+                      name: 'bottonTargetBlank',
+                      value: false,
+                      text: 'Open in new tab',
+                      label: ' ',
+                      width: 'half',
+                      showConditions: [
+                        {
+                          target: 'buttonType',
+                          type: 'equal',
+                          value: 'link',
+                        },
+                      ],
+                    },
+                  ],
+                },
               ],
             },
             {
