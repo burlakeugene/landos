@@ -128,6 +128,20 @@ export const getSectionsStructure = (name) => {
                         },
                       ],
                     },
+                    {
+                      type: 'select',
+                      options: 'sections',
+                      name: 'buttonScrollTo',
+                      value: '',
+                      width: 'half',
+                      showConditions: [
+                        {
+                          target: 'buttonType',
+                          type: 'equal',
+                          value: 'scroller',
+                        },
+                      ],
+                    },
                   ],
                 },
               ],
@@ -167,6 +181,25 @@ export const getSectionsStructure = (name) => {
                   ],
                 },
               ],
+            },
+            {
+              type: 'repeater',
+              name: 'images',
+              label: 'Fields',
+              structure: {
+                'alt': {
+                  label: 'Alt',
+                  type: 'text',
+                  width: 'half'
+                },
+                'file': {
+                  label: 'Image',
+                  fileTypes: ['image/png', 'image/jpeg'],
+                  type: 'file',
+                  width: 'half'
+                },
+              },
+              value: [],
             },
           ],
         },

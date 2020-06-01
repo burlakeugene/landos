@@ -185,10 +185,7 @@ export const getClearFields = (fields) => {
       if (fields[field].name) {
         newFields = {
           ...newFields,
-          [fields[field].name]: {
-            name: fields[field].name,
-            value: fields[field].value,
-          },
+          [fields[field].name]: fields[field].value,
         };
       }
     }
@@ -231,7 +228,7 @@ export const mergeFields = (saved, structure) => {
     structure.fields[index].sectionNameUniq = saved.nameUniq;
     if (saved.fields[structure.fields[index].name]) {
       structure.fields[index].value =
-        saved.fields[structure.fields[index].name].value;
+        saved.fields[structure.fields[index].name];
     }
     if (structure.fields[index].fields) {
       structure.fields[index].fields = mergeFields(
