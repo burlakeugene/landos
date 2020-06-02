@@ -461,11 +461,11 @@
     &-repeater {
       padding: 15px 0;
       font-size: 14px;
-      border-top: 1px solid #999;
+      border-bottom: 1px solid #999;
       position: relative;
       padding-right: 25px;
       &:last-child {
-        border-bottom: 1px solid #999;
+        border: none;
       }
       &-append {
         position: absolute;
@@ -477,7 +477,6 @@
         border-radius: 50%;
         border: none;
         z-index: 2;
-        cursor: pointer;
         &:focus{
           outline: none;
         }
@@ -495,10 +494,6 @@
         }
         &:after{
           transform: translate(-50%, -50%) rotate(90deg);
-        }
-        &__after{
-          top: auto;
-          bottom: -10px;
         }
       }
       &-controls {
@@ -566,7 +561,6 @@
         transition: all 0.3s;
         margin-right: 10px;
         vertical-align: middle;
-        margin-top: 15px;
         border: none;
         cursor: pointer;
         &:focus {

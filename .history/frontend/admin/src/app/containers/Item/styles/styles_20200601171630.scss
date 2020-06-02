@@ -461,72 +461,29 @@
     &-repeater {
       padding: 15px 0;
       font-size: 14px;
-      border-top: 1px solid #999;
+      border-bottom: 1px solid #999;
       position: relative;
       padding-right: 25px;
       &:last-child {
-        border-bottom: 1px solid #999;
-      }
-      &-append {
-        position: absolute;
-        top: -10px;
-        right: -10px;
-        width: 20px;
-        height: 20px;
-        background-color: #27ca5d;
-        border-radius: 50%;
         border: none;
-        z-index: 2;
-        cursor: pointer;
-        &:focus{
-          outline: none;
-        }
-        &:before,
-        &:after {
-          content: '';
-          position: absolute;
-          display: block;
-          height: 2px;
-          width: 50%;
-          background-color: #fff;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-        }
-        &:after{
-          transform: translate(-50%, -50%) rotate(90deg);
-        }
-        &__after{
-          top: auto;
-          bottom: -10px;
-        }
       }
-      &-controls {
+      &-controls{
         position: absolute;
         top: 0;
         right: 0;
         width: 25px;
         height: 100%;
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         align-items: center;
         justify-content: center;
       }
-      &-control {
+      &-control{
         margin: 5px 0;
-        background-position: center center;
-        background-repeat: no-repeat;
-        background-size: 80%;
-        border: none;
-        background-color: transparent;
-        width: 20px;
-        height: 20px;
-        padding: 0;
-        cursor: pointer;
         &:focus {
           outline: none;
         }
-        &__remove {
+        &__remove{
           border: none;
           border-radius: 50%;
           background-color: #e74b43;
@@ -534,8 +491,8 @@
           text-align: center;
           width: 20px;
           height: 20px;
-          position: relative;
-          &:before {
+          cursor: pointer;
+          &:before{
             content: '';
             position: absolute;
             display: block;
@@ -546,12 +503,6 @@
             left: 50%;
             transform: translate(-50%, -50%);
           }
-        }
-        &__down {
-          background-image: url(./images/arrow-down.svg);
-        }
-        &__up {
-          background-image: url(./images/arrow-up.svg);
         }
       }
       &-add {
@@ -566,7 +517,6 @@
         transition: all 0.3s;
         margin-right: 10px;
         vertical-align: middle;
-        margin-top: 15px;
         border: none;
         cursor: pointer;
         &:focus {

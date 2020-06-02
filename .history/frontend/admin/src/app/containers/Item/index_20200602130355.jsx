@@ -418,14 +418,13 @@ class Item extends Component {
     });
     this.changeSectionField(value, field);
   }
-  addRepeater(field, index) {
+  addRepeater(field) {
     let { value, structure } = field,
       newField = {};
-    if (!index && index !== 0) index = value.length + 1;
     Object.keys(structure).forEach((name) => {
       newField[name] = '';
     });
-    value.splice(index, 0, newField);
+    value.push(newField);
     this.changeSectionField(value, field);
   }
   repeaterChange(value, field, index, name) {
@@ -433,12 +432,10 @@ class Item extends Component {
     this.changeSectionField(field.value, field);
   }
   moveRepeater(field, index, to) {
+    console.log(index, to);
     let nextIndex = index + to;
-    if (nextIndex < 0) {
-      nextIndex = field.value.length - 1;
-    } else if (nextIndex > field.value.length - 1) {
-      nextIndex = 0;
-    }
+    if (nextIndex < 0) nextIndex = field.value.length - 1;
+    if (nextIndex >= field.value.length - 1) nextIndex = 0;
     let [removed] = field.value.splice(index, 1);
     field.value.splice(nextIndex, 0, removed);
     this.changeSectionField(field.value, field);
@@ -450,20 +447,6 @@ class Item extends Component {
           {field.value.map((fields, index) => {
             return (
               <div className="spotter-section-field-control-repeater">
-                {!index && (
-                  <button
-                    onClick={() => {
-                      this.addRepeater(field, index);
-                    }}
-                    className="spotter-section-field-control-repeater-append spotter-section-field-control-repeater-append__before"
-                  ></button>
-                )}
-                <button
-                  onClick={() => {
-                    this.addRepeater(field, index + 1);
-                  }}
-                  className="spotter-section-field-control-repeater-append spotter-section-field-control-repeater-append__after"
-                ></button>
                 <div className="spotter-section-field-control-repeater-controls">
                   <button
                     className="spotter-section-field-control-repeater-control spotter-section-field-control-repeater-control__up"
@@ -710,7 +693,6 @@ class Item extends Component {
             );
           })}
         </div>
-        {tabs.current === 'modals' && <div>MODALS</div>}
         {tabs.current === 'sections' &&
           (data.sections && data.sections.length ? (
             <DragDropContext onDragEnd={this.onDragEnd}>

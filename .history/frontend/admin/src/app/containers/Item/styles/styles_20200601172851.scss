@@ -461,45 +461,11 @@
     &-repeater {
       padding: 15px 0;
       font-size: 14px;
-      border-top: 1px solid #999;
+      border-bottom: 1px solid #999;
       position: relative;
       padding-right: 25px;
       &:last-child {
-        border-bottom: 1px solid #999;
-      }
-      &-append {
-        position: absolute;
-        top: -10px;
-        right: -10px;
-        width: 20px;
-        height: 20px;
-        background-color: #27ca5d;
-        border-radius: 50%;
         border: none;
-        z-index: 2;
-        cursor: pointer;
-        &:focus{
-          outline: none;
-        }
-        &:before,
-        &:after {
-          content: '';
-          position: absolute;
-          display: block;
-          height: 2px;
-          width: 50%;
-          background-color: #fff;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-        }
-        &:after{
-          transform: translate(-50%, -50%) rotate(90deg);
-        }
-        &__after{
-          top: auto;
-          bottom: -10px;
-        }
       }
       &-controls {
         position: absolute;
@@ -516,13 +482,12 @@
         margin: 5px 0;
         background-position: center center;
         background-repeat: no-repeat;
-        background-size: 80%;
+        background-size: 100% 100%;
         border: none;
         background-color: transparent;
         width: 20px;
         height: 20px;
         padding: 0;
-        cursor: pointer;
         &:focus {
           outline: none;
         }
@@ -534,6 +499,7 @@
           text-align: center;
           width: 20px;
           height: 20px;
+          cursor: pointer;
           position: relative;
           &:before {
             content: '';
@@ -566,7 +532,6 @@
         transition: all 0.3s;
         margin-right: 10px;
         vertical-align: middle;
-        margin-top: 15px;
         border: none;
         cursor: pointer;
         &:focus {

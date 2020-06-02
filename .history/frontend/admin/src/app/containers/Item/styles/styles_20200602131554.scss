@@ -461,11 +461,11 @@
     &-repeater {
       padding: 15px 0;
       font-size: 14px;
-      border-top: 1px solid #999;
+      border-bottom: 1px solid #999;
       position: relative;
       padding-right: 25px;
       &:last-child {
-        border-bottom: 1px solid #999;
+        border: none;
       }
       &-append {
         position: absolute;
@@ -566,7 +566,6 @@
         transition: all 0.3s;
         margin-right: 10px;
         vertical-align: middle;
-        margin-top: 15px;
         border: none;
         cursor: pointer;
         &:focus {

@@ -129,10 +129,6 @@ class Item extends Component {
     return fields;
   }
   changeSectionField(value, field) {
-    if (field.onChange) {
-      field.onChange(value);
-      return;
-    }
     let { item } = this.state;
     if (!item?.data?.sections) return;
     let sectionIndex = item.data.sections.findIndex((section) => {
@@ -177,7 +173,7 @@ class Item extends Component {
     });
   }
   getFieldNameUniq = (field) => {
-    return field.sectionNameUniq + field.mixinName + '_' + field.name;
+    return field.sectionNameUniq + '_' + field.name;
   };
   setError(nameUniq, value) {
     let { errors } = this.state;
@@ -352,17 +348,12 @@ class Item extends Component {
   }
   buildSelect(field) {
     let options = field.options;
-    if (options === 'sections') {
-      options = [];
-      let { item } = this.state,
-        { sections } = item.data;
-      sections.forEach((section) => {
-        if (section.nameUniq !== field.sectionNameUniq)
-          options.push({
-            value: section.nameUniq,
-            text: section.title + ' (' + section.nameUniq + ')',
-          });
-      });
+    if(options === 'sections'){
+      let {item} = this.state,
+        {sections} = item.data;
+      options = sections.map((section, index) => {
+        return 
+      })
     }
     return (
       <div className={['spotter-section-field-control'].join(' ')}>
@@ -411,104 +402,6 @@ class Item extends Component {
       </div>
     );
   }
-  removeRepeater(field, targetIndex) {
-    let { value } = field;
-    value = value.filter((item, index) => {
-      return index !== targetIndex;
-    });
-    this.changeSectionField(value, field);
-  }
-  addRepeater(field, index) {
-    let { value, structure } = field,
-      newField = {};
-    if (!index && index !== 0) index = value.length + 1;
-    Object.keys(structure).forEach((name) => {
-      newField[name] = '';
-    });
-    value.splice(index, 0, newField);
-    this.changeSectionField(value, field);
-  }
-  repeaterChange(value, field, index, name) {
-    field.value[index][name] = value;
-    this.changeSectionField(field.value, field);
-  }
-  moveRepeater(field, index, to) {
-    let nextIndex = index + to;
-    if (nextIndex < 0) {
-      nextIndex = field.value.length - 1;
-    } else if (nextIndex > field.value.length - 1) {
-      nextIndex = 0;
-    }
-    let [removed] = field.value.splice(index, 1);
-    field.value.splice(nextIndex, 0, removed);
-    this.changeSectionField(field.value, field);
-  }
-  buildRepeater(field) {
-    return (
-      <div className={['spotter-section-field-control'].join(' ')}>
-        <div className="spotter-section-field-control-repeaters">
-          {field.value.map((fields, index) => {
-            return (
-              <div className="spotter-section-field-control-repeater">
-                {!index && (
-                  <button
-                    onClick={() => {
-                      this.addRepeater(field, index);
-                    }}
-                    className="spotter-section-field-control-repeater-append spotter-section-field-control-repeater-append__before"
-                  ></button>
-                )}
-                <button
-                  onClick={() => {
-                    this.addRepeater(field, index + 1);
-                  }}
-                  className="spotter-section-field-control-repeater-append spotter-section-field-control-repeater-append__after"
-                ></button>
-                <div className="spotter-section-field-control-repeater-controls">
-                  <button
-                    className="spotter-section-field-control-repeater-control spotter-section-field-control-repeater-control__up"
-                    onClick={() => {
-                      this.moveRepeater(field, index, -1);
-                    }}
-                  ></button>
-                  <button
-                    className="spotter-section-field-control-repeater-control spotter-section-field-control-repeater-control__remove"
-                    onClick={() => {
-                      this.removeRepeater(field, index);
-                    }}
-                  ></button>
-                  <button
-                    className="spotter-section-field-control-repeater-control spotter-section-field-control-repeater-control__down"
-                    onClick={() => {
-                      this.moveRepeater(field, index, 1);
-                    }}
-                  ></button>
-                </div>
-                {Object.keys(field.structure).map((name) => {
-                  let item = JSON.parse(JSON.stringify(field.structure[name]));
-                  item.mixinName = name + '_' + index;
-                  item.name = name;
-                  item.value = fields[name];
-                  item.onChange = (value) => {
-                    this.repeaterChange(value, field, index, name);
-                  };
-                  return this.switchField(item);
-                })}
-              </div>
-            );
-          })}
-        </div>
-        <button
-          className="spotter-section-field-control-repeater-add"
-          onClick={() => {
-            this.addRepeater(field);
-          }}
-        >
-          Add
-        </button>
-      </div>
-    );
-  }
   switchField(field) {
     let { loadings, errors, item } = this.state,
       isLoading = loadings[this.getFieldNameUniq(field)],
@@ -518,12 +411,9 @@ class Item extends Component {
       for (let index in field.showConditions) {
         let condition = field.showConditions[index],
           section = findSectionAndClear(field.sectionNameUniq, item);
-        if (
-          section?.fields &&
-          section.fields.hasOwnProperty(condition.target)
-        ) {
+        if (section?.fields && section.fields[condition.target]) {
           if (condition.type === 'equal') {
-            if (section.fields[condition.target] !== condition.value)
+            if (section.fields[condition.target].value !== condition.value)
               render = false;
           }
         }
@@ -571,9 +461,6 @@ class Item extends Component {
               break;
             case 'bool':
               return this.buildBool(field);
-              break;
-            case 'repeater':
-              return this.buildRepeater(field);
               break;
             default:
               return null;
@@ -710,7 +597,6 @@ class Item extends Component {
             );
           })}
         </div>
-        {tabs.current === 'modals' && <div>MODALS</div>}
         {tabs.current === 'sections' &&
           (data.sections && data.sections.length ? (
             <DragDropContext onDragEnd={this.onDragEnd}>

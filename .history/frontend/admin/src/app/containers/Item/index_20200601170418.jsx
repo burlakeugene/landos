@@ -418,30 +418,14 @@ class Item extends Component {
     });
     this.changeSectionField(value, field);
   }
-  addRepeater(field, index) {
+  addRepeater(field) {
     let { value, structure } = field,
       newField = {};
-    if (!index && index !== 0) index = value.length + 1;
     Object.keys(structure).forEach((name) => {
       newField[name] = '';
     });
-    value.splice(index, 0, newField);
+    value.push(newField);
     this.changeSectionField(value, field);
-  }
-  repeaterChange(value, field, index, name) {
-    field.value[index][name] = value;
-    this.changeSectionField(field.value, field);
-  }
-  moveRepeater(field, index, to) {
-    let nextIndex = index + to;
-    if (nextIndex < 0) {
-      nextIndex = field.value.length - 1;
-    } else if (nextIndex > field.value.length - 1) {
-      nextIndex = 0;
-    }
-    let [removed] = field.value.splice(index, 1);
-    field.value.splice(nextIndex, 0, removed);
-    this.changeSectionField(field.value, field);
   }
   buildRepeater(field) {
     return (
@@ -450,48 +434,18 @@ class Item extends Component {
           {field.value.map((fields, index) => {
             return (
               <div className="spotter-section-field-control-repeater">
-                {!index && (
-                  <button
-                    onClick={() => {
-                      this.addRepeater(field, index);
-                    }}
-                    className="spotter-section-field-control-repeater-append spotter-section-field-control-repeater-append__before"
-                  ></button>
-                )}
                 <button
+                  className="spotter-section-field-control-repeater-remove"
                   onClick={() => {
-                    this.addRepeater(field, index + 1);
+                    this.removeRepeater(field, index);
                   }}
-                  className="spotter-section-field-control-repeater-append spotter-section-field-control-repeater-append__after"
-                ></button>
-                <div className="spotter-section-field-control-repeater-controls">
-                  <button
-                    className="spotter-section-field-control-repeater-control spotter-section-field-control-repeater-control__up"
-                    onClick={() => {
-                      this.moveRepeater(field, index, -1);
-                    }}
-                  ></button>
-                  <button
-                    className="spotter-section-field-control-repeater-control spotter-section-field-control-repeater-control__remove"
-                    onClick={() => {
-                      this.removeRepeater(field, index);
-                    }}
-                  ></button>
-                  <button
-                    className="spotter-section-field-control-repeater-control spotter-section-field-control-repeater-control__down"
-                    onClick={() => {
-                      this.moveRepeater(field, index, 1);
-                    }}
-                  ></button>
-                </div>
-                {Object.keys(field.structure).map((name) => {
-                  let item = JSON.parse(JSON.stringify(field.structure[name]));
-                  item.mixinName = name + '_' + index;
-                  item.name = name;
+                >
+                  -
+                </button>
+                {Object.keys(field.structure).map((name, subIndex) => {
+                  let item = field.structure[name];
+                  item.mixinName = item.name+'_'+index+'_'+subIndex;
                   item.value = fields[name];
-                  item.onChange = (value) => {
-                    this.repeaterChange(value, field, index, name);
-                  };
                   return this.switchField(item);
                 })}
               </div>
@@ -710,7 +664,6 @@ class Item extends Component {
             );
           })}
         </div>
-        {tabs.current === 'modals' && <div>MODALS</div>}
         {tabs.current === 'sections' &&
           (data.sections && data.sections.length ? (
             <DragDropContext onDragEnd={this.onDragEnd}>

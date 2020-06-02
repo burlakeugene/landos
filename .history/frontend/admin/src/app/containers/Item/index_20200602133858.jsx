@@ -421,7 +421,7 @@ class Item extends Component {
   addRepeater(field, index) {
     let { value, structure } = field,
       newField = {};
-    if (!index && index !== 0) index = value.length + 1;
+    if (!index) index = value.length + 1;
     Object.keys(structure).forEach((name) => {
       newField[name] = '';
     });
@@ -710,7 +710,6 @@ class Item extends Component {
             );
           })}
         </div>
-        {tabs.current === 'modals' && <div>MODALS</div>}
         {tabs.current === 'sections' &&
           (data.sections && data.sections.length ? (
             <DragDropContext onDragEnd={this.onDragEnd}>

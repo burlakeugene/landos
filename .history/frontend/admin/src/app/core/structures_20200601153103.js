@@ -182,25 +182,25 @@ export const getSectionsStructure = (name) => {
                 },
               ],
             },
-            // {
-            //   type: 'repeater',
-            //   name: 'images',
-            //   label: 'Fields',
-            //   structure: {
-            //     'alt': {
-            //       label: 'Alt',
-            //       type: 'text',
-            //       width: 'half'
-            //     },
-            //     'file': {
-            //       label: 'Image',
-            //       fileTypes: ['image/png', 'image/jpeg'],
-            //       type: 'file',
-            //       width: 'half'
-            //     },
-            //   },
-            //   value: [],
-            // },
+            {
+              type: 'repeater',
+              name: 'images',
+              label: 'Fields',
+              structure: {
+                'alt': {
+                  label: 'Alt',
+                  type: 'text',
+                  width: 'half'
+                },
+                'file': {
+                  label: 'Image',
+                  fileTypes: ['image/png', 'image/jpeg'],
+                  type: 'file',
+                  width: 'half'
+                },
+              },
+              value: [],
+            },
           ],
         },
       ],
