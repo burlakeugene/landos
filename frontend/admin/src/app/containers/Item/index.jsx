@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { loaderOff, loaderOn, messagePush } from 'actions/Status';
-import { getItem, findSectionAndClear } from 'actions/Items';
+import { getItem, findAndClear } from 'actions/Items';
 import Button from 'components/Button';
 import {
   setRemovingItem,
   saveItem,
   uploadImage,
   generateUniqSection,
+  generateUniqModal,
 } from 'actions/Items';
 import history from 'core/history';
 import Modal from 'burlak-react-modal';
@@ -57,13 +58,14 @@ class Item extends Component {
     this.save = this.save.bind(this);
     this.remove = this.remove.bind(this);
     this.addSection = this.addSection.bind(this);
+    this.addModal = this.addModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
     this.openModal = this.openModal.bind(this);
-    this.changeSectionField = this.changeSectionField.bind(this);
+    this.changeItemField = this.changeItemField.bind(this);
     this.onDragEnd = this.onDragEnd.bind(this);
-    this.changeSectionTitle = this.changeSectionTitle.bind(this);
     this.removeSection = this.removeSection.bind(this);
     this.toggleFields = this.toggleFields.bind(this);
+    this.changeTitle = this.changeTitle.bind(this);
   }
   toggleFields(nameUniq) {
     let { opened } = this.state;
@@ -97,6 +99,31 @@ class Item extends Component {
       newSectionIndex: false,
     });
   }
+  changeTitle(type, value, index) {
+    let { item } = this.state;
+    item.data[type][index].title = value;
+    this.setState({
+      item,
+    });
+  }
+  addModal(index) {
+    let { item } = this.state,
+      modal = generateUniqModal();
+    if (!index) {
+      index = item.data.modals.length;
+    }
+    item.data.modals.splice(index, 0, modal);
+    this.setState({
+      item,
+    });
+  }
+  removeModal(index) {
+    let { item } = this.state;
+    item.data.modals.splice(index, 1);
+    this.setState({
+      item,
+    });
+  }
   componentDidMount() {
     let { id } = this.state;
     loaderChange(true);
@@ -128,31 +155,22 @@ class Item extends Component {
     }
     return fields;
   }
-  changeSectionField(value, field) {
+  changeItemField(value, field) {
     if (field.onChange) {
       field.onChange(value);
       return;
     }
     let { item } = this.state;
-    if (!item?.data?.sections) return;
-    let sectionIndex = item.data.sections.findIndex((section) => {
-      return section.nameUniq === field.sectionNameUniq;
+    let parentIndex = item.data[field.parentType].findIndex((parent) => {
+      return parent.nameUniq === field.parentNameUniq;
     });
-    if (sectionIndex < 0) return;
-    let fields = item.data.sections[sectionIndex].fields;
-    item.data.sections[sectionIndex].fields = this.setRecField(
+    if (parentIndex < 0) return;
+    let fields = item.data[field.parentType][parentIndex].fields;
+    item.data[field.parentType][parentIndex].fields = this.setRecField(
       value,
       field.name,
-      item.data.sections[sectionIndex].fields
+      item.data[field.parentType][parentIndex].fields
     );
-    this.setState({
-      item,
-    });
-  }
-  changeSectionTitle(value, sectionIndex) {
-    let { item } = this.state;
-    if (!item.data.sections) return;
-    item.data.sections[sectionIndex].title = value;
     this.setState({
       item,
     });
@@ -177,7 +195,7 @@ class Item extends Component {
     });
   }
   getFieldNameUniq = (field) => {
-    return field.sectionNameUniq + field.mixinName + '_' + field.name;
+    return field.parentNameUniq + field.mixinName + '_' + field.name;
   };
   setError(nameUniq, value) {
     let { errors } = this.state;
@@ -207,7 +225,7 @@ class Item extends Component {
           type="text"
           value={field.value}
           onChange={(e) => {
-            this.changeSectionField(e.target.value, field);
+            this.changeItemField(e.target.value, field);
           }}
         />
       </div>
@@ -234,7 +252,7 @@ class Item extends Component {
                 : '',
             ].join(' ')}
             onClick={(e) => {
-              this.changeSectionField('', field);
+              this.changeItemField('', field);
             }}
           ></button>
           <label htmlFor={this.getFieldNameUniq(field)}>
@@ -283,7 +301,7 @@ class Item extends Component {
               .then((resp) => {
                 uploadImage(resp)
                   .then((resp) => {
-                    this.changeSectionField(resp, field);
+                    this.changeItemField(resp, field);
                     this.setLoading(this.getFieldNameUniq(field), false);
                   })
                   .catch((error) => {});
@@ -311,7 +329,7 @@ class Item extends Component {
                     : '',
                 ].join(' ')}
                 onClick={() => {
-                  this.changeSectionField(option.value, field);
+                  this.changeItemField(option.value, field);
                 }}
               >
                 {option.text}
@@ -335,13 +353,13 @@ class Item extends Component {
           <ContentEditor
             value={field.value}
             onChange={(value) => {
-              this.changeSectionField(value, field);
+              this.changeItemField(value, field);
             }}
           />
         ) : (
           <textarea
             onChange={(event) => {
-              this.changeSectionField(event.target.value, field);
+              this.changeItemField(event.target.value, field);
             }}
           >
             {field.value}
@@ -357,18 +375,29 @@ class Item extends Component {
       let { item } = this.state,
         { sections } = item.data;
       sections.forEach((section) => {
-        if (section.nameUniq !== field.sectionNameUniq)
+        if (section.nameUniq !== field.parentNameUniq)
           options.push({
             value: section.nameUniq,
             text: section.title + ' (' + section.nameUniq + ')',
           });
       });
     }
+    if (options === 'modals') {
+      options = [];
+      let { item } = this.state,
+        { modals } = item.data;
+      modals.forEach((modal) => {
+        options.push({
+          value: modal.nameUniq,
+          text: modal.title + ' (' + modal.nameUniq + ')',
+        });
+      });
+    }
     return (
       <div className={['spotter-section-field-control'].join(' ')}>
         <select
           onChange={(event) => {
-            this.changeSectionField(event.target.value, field);
+            this.changeItemField(event.target.value, field);
           }}
         >
           <option></option>
@@ -399,7 +428,7 @@ class Item extends Component {
               name={field.name}
               checked={field.value}
               onChange={(event) => {
-                this.changeSectionField(event.target.checked, field);
+                this.changeItemField(event.target.checked, field);
               }}
             />
             <div className="spotter-section-field-control-checkbox-inner">
@@ -416,7 +445,7 @@ class Item extends Component {
     value = value.filter((item, index) => {
       return index !== targetIndex;
     });
-    this.changeSectionField(value, field);
+    this.changeItemField(value, field);
   }
   addRepeater(field, index) {
     let { value, structure } = field,
@@ -426,11 +455,11 @@ class Item extends Component {
       newField[name] = '';
     });
     value.splice(index, 0, newField);
-    this.changeSectionField(value, field);
+    this.changeItemField(value, field);
   }
   repeaterChange(value, field, index, name) {
     field.value[index][name] = value;
-    this.changeSectionField(field.value, field);
+    this.changeItemField(field.value, field);
   }
   moveRepeater(field, index, to) {
     let nextIndex = index + to;
@@ -441,7 +470,7 @@ class Item extends Component {
     }
     let [removed] = field.value.splice(index, 1);
     field.value.splice(nextIndex, 0, removed);
-    this.changeSectionField(field.value, field);
+    this.changeItemField(field.value, field);
   }
   buildRepeater(field) {
     return (
@@ -517,7 +546,7 @@ class Item extends Component {
       let render = true;
       for (let index in field.showConditions) {
         let condition = field.showConditions[index],
-          section = findSectionAndClear(field.sectionNameUniq, item);
+          section = findAndClear(field.parentNameUniq, item, field.parentType);
         if (
           section?.fields &&
           section.fields.hasOwnProperty(condition.target)
@@ -710,7 +739,45 @@ class Item extends Component {
             );
           })}
         </div>
-        {tabs.current === 'modals' && <div>MODALS</div>}
+        {tabs.current === 'modals' && (
+          <div className="spotter-modals">
+            {data.modals.map((modal, index) => {
+              return (
+                <div className="spotter-modal">
+                  <ContentEditable
+                    html={modal.title}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                    onChange={(e) => {
+                      this.changeTitle('modals', e.target.value, index);
+                    }}
+                  />
+                  {modal.title} {modal.nameUniq}{' '}
+                  {modal.fields &&
+                    modal.fields.map((field, index) => {
+                      return this.switchField(field);
+                    })}
+                  <button
+                    onClick={() => {
+                      this.removeModal(index);
+                    }}
+                  >
+                    Remove
+                  </button>
+                </div>
+              );
+            })}
+            <button
+              className="button"
+              onClick={() => {
+                this.addModal();
+              }}
+            >
+              Add modal
+            </button>
+          </div>
+        )}
         {tabs.current === 'sections' &&
           (data.sections && data.sections.length ? (
             <DragDropContext onDragEnd={this.onDragEnd}>
@@ -767,7 +834,8 @@ class Item extends Component {
                                         e.stopPropagation();
                                       }}
                                       onChange={(e) => {
-                                        this.changeSectionTitle(
+                                        this.changeTitle(
+                                          'sections',
                                           e.target.value,
                                           sectionIndex
                                         );

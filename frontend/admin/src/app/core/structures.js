@@ -10,6 +10,101 @@ export const getItemDefault = () => {
   };
 };
 
+export const getModalStructure = () => {
+  return {
+    title: 'Modal',
+    name: 'modal',
+    fields: [
+      {
+        type: 'text',
+        name: 'title',
+        label: 'Title',
+        value: '',
+      },
+      {
+        type: 'number',
+        name: 'maxWidth',
+        label: 'Modals max width in px',
+        value: 400,
+      },
+      {
+        type: 'select',
+        name: 'type',
+        value: 'content',
+        label: 'Modal type',
+        options: [
+          {
+            value: 'content',
+            text: 'Content',
+          },
+          {
+            value: 'iframe',
+            text: 'Iframe',
+          },
+          {
+            value: 'form',
+            text: 'Form',
+          },
+        ],
+      },
+      {
+        type: 'textarea',
+        html: true,
+        value: '',
+        name: 'content',
+        label: 'Content',
+        showConditions: [
+          {
+            target: 'type',
+            type: 'equal',
+            value: 'content',
+          },
+        ],
+      },
+      {
+        type: 'text',
+        name: 'iframeLink',
+        label: 'Iframe link',
+        value: '',
+        showConditions: [
+          {
+            target: 'type',
+            type: 'equal',
+            value: 'iframe',
+          },
+        ],
+      },
+      {
+        type: 'number',
+        name: 'iframeHeight',
+        label: 'Iframes height in px',
+        value: 400,
+        showConditions: [
+          {
+            target: 'type',
+            type: 'equal',
+            value: 'iframe',
+          },
+        ],
+      },
+      {
+        type: 'select',
+        name: 'form',
+        label: 'Form',
+        options: 'forms',
+        value: '',
+        showConditions: [
+          {
+            target: 'type',
+            type: 'equal',
+            value: 'form',
+          },
+        ],
+      },
+    ],
+  };
+};
+
 export const getSectionsStructure = (name) => {
   // name of each field in section must be uniq !!
   let data = {
@@ -134,11 +229,27 @@ export const getSectionsStructure = (name) => {
                       name: 'buttonScrollTo',
                       value: '',
                       width: 'half',
+                      label: 'Button scroll to section',
                       showConditions: [
                         {
                           target: 'buttonType',
                           type: 'equal',
                           value: 'scroller',
+                        },
+                      ],
+                    },
+                    {
+                      type: 'select',
+                      options: 'modals',
+                      name: 'buttonCallModal',
+                      value: '',
+                      width: 'half',
+                      label: 'Button call modal',
+                      showConditions: [
+                        {
+                          target: 'buttonType',
+                          type: 'equal',
+                          value: 'modal',
                         },
                       ],
                     },

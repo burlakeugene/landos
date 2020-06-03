@@ -2,7 +2,7 @@ import { store } from 'store';
 import Request from 'modules/Request';
 import { loaderOn, loaderOff, messagePush } from 'actions/Status';
 import { historyReplace } from 'actions/App';
-import { getSectionsStructure } from 'core/structures';
+import { getSectionsStructure, getModalStructure } from 'core/structures';
 import Emitter from 'core/emitter';
 export const getItems = () => {
   return new Promise((resolve, reject) => {
@@ -193,39 +193,44 @@ export const getClearFields = (fields) => {
   return newFields;
 };
 
-export const getClearSection = (section) => {
-  section.fields = getClearFields(section.fields);
-  return section;
-};
-
 export const getClearData = (item) => {
   if (item?.data?.sections) {
     for (let i = 0; i < item.data.sections.length; i++) {
-      item.data.sections[i] = getClearSection(item.data.sections[i]);
+      item.data.sections[i].fields = getClearFields(
+        item.data.sections[i].fields
+      );
+    }
+  }
+  if (item?.data?.modals) {
+    for (let i = 0; i < item.data.modals.length; i++) {
+      item.data.modals[i].fields = getClearFields(item.data.modals[i].fields);
     }
   }
   return item;
 };
 
-export const findSectionByNameUniq = (nameUniq, item) => {
-  let section = false;
-  if (item?.data?.sections) {
-    for (let i = 0; i < item.data.sections.length; i++) {
-      if (item.data.sections[i].nameUniq === nameUniq) {
-        section = JSON.parse(JSON.stringify(item.data.sections[i]));
+export const findByNameUniq = (nameUniq, item, parentType) => {
+  let data = false;
+  if (item.data[parentType]) {
+    for (let i = 0; i < item.data[parentType].length; i++) {
+      if (item.data[parentType][i].nameUniq === nameUniq) {
+        data = JSON.parse(JSON.stringify(item.data[parentType][i]));
       }
     }
   }
-  return section;
+  return data;
 };
 
-export const findSectionAndClear = (nameUniq, item) => {
-  return getClearSection(findSectionByNameUniq(nameUniq, item));
+export const findAndClear = (nameUniq, item, parentType) => {
+  let data = findByNameUniq(nameUniq, item, parentType);
+  if (data) data.fields = getClearFields(data.fields);
+  return data;
 };
 
-export const mergeFields = (saved, structure) => {
+export const mergeFields = (saved, structure, parentType) => {
   for (let index in structure.fields) {
-    structure.fields[index].sectionNameUniq = saved.nameUniq;
+    structure.fields[index].parentNameUniq = saved.nameUniq;
+    structure.fields[index].parentType = parentType;
     if (saved.fields[structure.fields[index].name]) {
       structure.fields[index].value =
         saved.fields[structure.fields[index].name];
@@ -233,7 +238,8 @@ export const mergeFields = (saved, structure) => {
     if (structure.fields[index].fields) {
       structure.fields[index].fields = mergeFields(
         saved,
-        structure.fields[index]
+        structure.fields[index],
+        parentType
       );
     }
   }
@@ -241,7 +247,6 @@ export const mergeFields = (saved, structure) => {
 };
 
 export const mergeWithStructure = (item) => {
-  let sectionsStructure = getSectionsStructure();
   if (item?.data?.sections) {
     let newSections = [];
     for (let section in item.data.sections) {
@@ -251,12 +256,28 @@ export const mergeWithStructure = (item) => {
         sectionStructure = JSON.parse(JSON.stringify(sectionStructure));
         let newSection = {
           ...currentSection,
-          fields: mergeFields(currentSection, sectionStructure),
+          fields: mergeFields(currentSection, sectionStructure, 'sections'),
         };
         newSections.push(newSection);
       }
     }
     item.data.sections = newSections;
+  }
+  if (item?.data?.modals) {
+    let newModals = [];
+    for (let modal in item.data.modals) {
+      let currentModal = item.data.modals[modal],
+        modalStructure = getModalStructure();
+      if (modalStructure) {
+        modalStructure = JSON.parse(JSON.stringify(modalStructure));
+        let newModal = {
+          ...currentModal,
+          fields: mergeFields(currentModal, modalStructure, 'modals'),
+        };
+        newModals.push(newModal);
+      }
+    }
+    item.data.modals = newModals;
   }
   return item;
 };
@@ -269,13 +290,15 @@ export const generateHash = () => {
   return result;
 };
 
-export const prepareFields = (sectionNameUniq, fields) => {
+export const prepareFields = (parentNameUniq, fields, parentType) => {
   for (let field in fields) {
-    fields[field]['sectionNameUniq'] = sectionNameUniq;
+    fields[field]['parentNameUniq'] = parentNameUniq;
+    fields[field]['parentType'] = parentType;
     if (fields[field].fields)
       fields[field].fields = prepareFields(
-        sectionNameUniq,
-        fields[field].fields
+        parentNameUniq,
+        fields[field].fields,
+        parentType
       );
   }
   return fields;
@@ -284,6 +307,13 @@ export const prepareFields = (sectionNameUniq, fields) => {
 export const generateUniqSection = (name) => {
   let section = getSectionsStructure(name);
   section.nameUniq = name + '_' + generateHash();
-  section.fields = prepareFields(section.nameUniq, section.fields);
+  section.fields = prepareFields(section.nameUniq, section.fields, 'sections');
   return section || false;
+};
+
+export const generateUniqModal = () => {
+  let modal = getModalStructure();
+  modal.nameUniq = 'modal_' + generateHash();
+  modal.fields = prepareFields(modal.nameUniq, modal.fields, 'modals');
+  return modal;
 };
