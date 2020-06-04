@@ -107,7 +107,7 @@ class List extends Component {
               return data?.usedBy?.length ? (
                 <>
                   {data.usedBy.map((item, index) => (
-                    <div>
+                    <div key={index}>
                       <a href={item.link} target="_blank" onClick={(e) => {
                         e.stopPropagation();
                       }}>

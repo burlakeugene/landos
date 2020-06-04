@@ -70,7 +70,7 @@
   }
 }
 
-.spotter-sections {
+.spotter-panel {
   background-color: #fff;
   padding: 10px;
   border-radius: 5px;
@@ -149,7 +149,7 @@
         line-height: 1em;
       }
       &:hover {
-        .spotter-sections-choose-item {
+        .spotter-panel-choose-item {
           &-image {
             &:after {
               opacity: 1;
@@ -163,7 +163,7 @@
   }
 }
 
-.spotter-section {
+.spotter-panel-item {
   position: relative;
   padding: 10px 5px;
   &-inner {
@@ -203,7 +203,7 @@
     }
   }
   &:hover {
-    .spotter-section {
+    .spotter-panel-item {
       &-add {
         opacity: 1;
         visibility: visible;
@@ -298,7 +298,7 @@
   }
 }
 
-.spotter-section-field {
+.spotter-panel-item-field {
   display: inline-block;
   vertical-align: top;
   width: 100%;
@@ -320,7 +320,7 @@
     font-size: 14px;
     line-height: 1em;
     min-height: 14px;
-    & + .spotter-section-field-control {
+    & + .spotter-panel-item-field-control {
       margin-top: 10px;
     }
   }
@@ -330,6 +330,7 @@
     input,
     select,
     textarea {
+      max-width: 100%;
       width: 100%;
       margin: 0;
       background: #fff;
@@ -446,8 +447,8 @@
             &:before {
               display: none;
             }
-            & + .spotter-section-field-control-checkbox-inner {
-              .spotter-section-field-control-checkbox-point {
+            & + .spotter-panel-item-field-control-checkbox-inner {
+              .spotter-panel-item-field-control-checkbox-point {
                 &:before {
                   opacity: 1;
                   margin-top: -10%;
@@ -590,7 +591,7 @@
     padding: 0;
   }
   &__switch {
-    .spotter-section-field-control {
+    .spotter-panel-item-field-control {
       display: flex;
       vertical-align: middle;
       border-radius: 3px;
@@ -625,7 +626,7 @@
     }
   }
   &__textarea {
-    .spotter-section-field-control {
+    .spotter-panel-item-field-control {
       &__textarea {
         &-html {
           font-size: 14px;
@@ -650,7 +651,7 @@
       top: 0;
       left: 0;
     }
-    .spotter-section-field-control {
+    .spotter-panel-item-field-control {
       width: 100%;
       label {
         background-color: #fff;
@@ -741,8 +742,8 @@
     }
   }
   &__loading {
-    &.spotter-section-field__file {
-      .spotter-section-field {
+    &.spotter-panel-item-field__file {
+      .spotter-panel-item-field {
         &-control {
           &,
           &__empty {
@@ -757,7 +758,7 @@
                 transform: translate(-50%, -50%) scale(0);
               }
             }
-            .spotter-section-field-control-loader {
+            .spotter-panel-item-field-control-loader {
               opacity: 1;
               visibility: visible;
               transform: translate(-50%, -50%) scale(1);

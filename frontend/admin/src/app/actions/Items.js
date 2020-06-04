@@ -231,6 +231,7 @@ export const mergeFields = (saved, structure, parentType) => {
   for (let index in structure.fields) {
     structure.fields[index].parentNameUniq = saved.nameUniq;
     structure.fields[index].parentType = parentType;
+    structure.fields[index].index = index;
     if (saved.fields[structure.fields[index].name]) {
       structure.fields[index].value =
         saved.fields[structure.fields[index].name];
@@ -306,6 +307,7 @@ export const prepareFields = (parentNameUniq, fields, parentType) => {
 
 export const generateUniqSection = (name) => {
   let section = getSectionsStructure(name);
+  if(section) section = JSON.parse(JSON.stringify(section));
   section.nameUniq = name + '_' + generateHash();
   section.fields = prepareFields(section.nameUniq, section.fields, 'sections');
   return section || false;
@@ -313,6 +315,7 @@ export const generateUniqSection = (name) => {
 
 export const generateUniqModal = () => {
   let modal = getModalStructure();
+  if(modal) modal = JSON.parse(JSON.stringify(modal));
   modal.nameUniq = 'modal_' + generateHash();
   modal.fields = prepareFields(modal.nameUniq, modal.fields, 'modals');
   return modal;

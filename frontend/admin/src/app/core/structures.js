@@ -20,18 +20,21 @@ export const getModalStructure = () => {
         name: 'title',
         label: 'Title',
         value: '',
+        width: 'third',
       },
       {
         type: 'number',
         name: 'maxWidth',
         label: 'Modals max width in px',
         value: 400,
+        width: 'third',
       },
       {
         type: 'select',
         name: 'type',
         value: 'content',
         label: 'Modal type',
+        width: 'third',
         options: [
           {
             value: 'content',
@@ -66,6 +69,7 @@ export const getModalStructure = () => {
         name: 'iframeLink',
         label: 'Iframe link',
         value: '',
+        width: 'half',
         showConditions: [
           {
             target: 'type',
@@ -79,6 +83,7 @@ export const getModalStructure = () => {
         name: 'iframeHeight',
         label: 'Iframes height in px',
         value: 400,
+        width: 'half',
         showConditions: [
           {
             target: 'type',
@@ -228,7 +233,6 @@ export const getSectionsStructure = (name) => {
                       options: 'sections',
                       name: 'buttonScrollTo',
                       value: '',
-                      width: 'half',
                       label: 'Button scroll to section',
                       showConditions: [
                         {
@@ -243,7 +247,6 @@ export const getSectionsStructure = (name) => {
                       options: 'modals',
                       name: 'buttonCallModal',
                       value: '',
-                      width: 'half',
                       label: 'Button call modal',
                       showConditions: [
                         {
@@ -298,16 +301,30 @@ export const getSectionsStructure = (name) => {
             //   name: 'images',
             //   label: 'Fields',
             //   structure: {
-            //     'alt': {
+            //     alt: {
             //       label: 'Alt',
             //       type: 'text',
-            //       width: 'half'
+            //       width: 'half',
             //     },
-            //     'file': {
+            //     file: {
             //       label: 'Image',
             //       fileTypes: ['image/png', 'image/jpeg'],
             //       type: 'file',
-            //       width: 'half'
+            //       width: 'half',
+            //       rowShowConditions: [
+            //         {
+            //           target: 'alt',
+            //           type: 'equal',
+            //           value: 'test',
+            //         },
+            //       ],
+            //       showConditions: [
+            //         {
+            //           target: 'buttonType',
+            //           type: 'equal',
+            //           value: 'scroller',
+            //         },
+            //       ],
             //     },
             //   },
             //   value: [],
