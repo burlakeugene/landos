@@ -1,0 +1,43 @@
+.spotter-button{
+  display: inline-block;
+  font-size: 14px;
+  color: #fff;
+  border-radius: 20px;
+  background-color: #0088cc;
+  padding: 10px 15px;
+  line-height: 1em;
+  text-decoration: none;
+  transition: all 0.3s;
+  margin-right: 10px;
+  vertical-align: middle;
+  border: none;
+  cursor: pointer;
+  &:focus,
+  &:active{
+    color: #fff;
+    outline: none;
+    box-shadow: none;
+  }
+  &:hover{
+    transform: scale(1.04);
+    &, &:focus{
+      box-shadow: 0 10px 20px -15px #000;
+    }
+  }
+  &:active{
+    &,&:focus,&:hover{
+      transform: scale(1);
+      box-shadow: none;
+    }
+  }
+  &__success{
+    background-color: #27ca5d;
+  }
+  &__error{
+    background-color: #e74b43;
+  }
+  &:hover{
+    color: #fff;
+  }
+  
+}

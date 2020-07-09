@@ -50,6 +50,14 @@ module.exports = {
             options: {
               includePaths: ['absolute/path/a', 'absolute/path/b']
             }
+          },
+          {
+            loader: 'sass-resources-loader',
+            options: {
+              resources: [
+                './src/app/common/styles/variables.scss'
+              ]
+            }
           }
         ]
       },
@@ -83,8 +91,9 @@ module.exports = {
       actions: ROOT_DIR + '/src/app/actions',
       modules: ROOT_DIR + '/src/app/modules',
       core: ROOT_DIR + '/src/app/core',
+      common: ROOT_DIR + '/src/app/common',
       config: ROOT_DIR + '/config//common.json',
-      store: ROOT_DIR + '/src/app/redux/store'
+      store: ROOT_DIR + '/src/app/redux/store',
     }
   }
 };

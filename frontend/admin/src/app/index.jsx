@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { HashRouter as Router, Route, Switch, Link } from 'react-router-dom';
 import history from 'core/history';
 import Index from 'pages/Index';
-import Item from 'pages/Item';
+import Sections from 'pages/Sections';
 import Status from 'components/Status';
 import ModalRemove from 'components/ModalRemove';
 import Preloader from 'components/Preloader';
@@ -18,7 +18,7 @@ class App extends Component {
           <Router history={history}>
             <Switch>
               <Route exact path="/" component={Index} />
-              <Route exact path="/item/:id?"component={Item} />
+              <Route exact path="/sections" component={Sections} />
             </Switch>
           </Router>
           <Status />

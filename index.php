@@ -8,6 +8,9 @@
  * Author URI: https://burlakeugene.github.io
  */
 
+global $wpdb;
+global $TABLE_NAME;
+$TABLE_NAME = $wpdb->prefix . 'spotter';
 // admin page
 add_action('admin_menu', 'spotter_admin_menu');
 function spotter_admin_menu(){
@@ -26,7 +29,7 @@ function spotter(){
 
 //styles and scripts
 function spotter_styles_scripts($hook) {
-  wp_register_style('spotter', plugins_url('frontend/admin/dist/bundle.css'));
+  // wp_register_style('spotter', plugins_url('frontend/admin/dist/bundle.css'));
   wp_enqueue_style('spotter');
 	wp_enqueue_script('spotter', plugins_url('spotter/frontend/admin/dist/bundle.js'), null, null, true);
 }
@@ -37,13 +40,13 @@ add_action( 'admin_enqueue_scripts', 'spotter_styles_scripts' );
 register_activation_hook( __FILE__, 'spotter_create_db' );
 function spotter_create_db() {
 	global $wpdb;
+	global $TABLE_NAME;
 	$charset_collate = $wpdb->get_charset_collate();
-	$table = $wpdb->prefix . 'spotter';
-
-	$sql = "CREATE TABLE $table (
+	$sql = "CREATE TABLE $TABLE_NAME (
 		`id` mediumint(9) NOT NULL AUTO_INCREMENT,
 		`time` varchar(255) DEFAULT '0000000000' NOT NULL,
 		`title` varchar(255) NOT NULL,
+		`type` varchar(255) NOT NULL,
 		`data` longtext,
 		`order` mediumint(11) NOT NULL DEFAULT 0,
 		UNIQUE KEY id (id)
@@ -61,8 +64,8 @@ function spotter_box(){
 
 function spotter_box_callback( $post, $meta ){
 	global $wpdb;
-	$table = $wpdb->prefix . 'spotter';
-	$landings = $wpdb->get_results("SELECT * FROM $table ORDER BY `order` DESC");
+	global $TABLE_NAME;
+	$landings = $wpdb->get_results("SELECT * FROM $TABLE_NAME WHERE type='page' ORDER BY `order` DESC");
 	wp_nonce_field( plugin_basename(__FILE__), 'myplugin_noncename' );
 	$value = get_post_meta( $post->ID, 'spotter_id', 1 );
 	echo '<label for="myplugin_new_field">Choose landing</label> ';
@@ -103,12 +106,12 @@ function spotter_load($origin) {
 function get_landing(){
 	global $post;
 	global $wpdb;
-	$table = $wpdb->prefix . 'spotter';
+	global $TABLE_NAME;
 	$id = $post->ID;
 	$id = get_metadata( 'post', $id, 'spotter_id', true );
-	$landing = $wpdb->get_results("SELECT * FROM $table WHERE id=$id");
-	$landing = $landing[0];
-	return $landing;
+	$page = $wpdb->get_results("SELECT * FROM $TABLE_NAME WHERE id=$id AND type='page'");
+	$page = $page[0];
+	return $page;
 }
 
 function my_get_template_part($template, $data = array()){
@@ -151,31 +154,19 @@ add_action( 'rest_api_init', function () {
 	));
 });
 
-function get_items(){
+function get_items($req){
 	global $wpdb;
-	$table = $wpdb->prefix . 'spotter';
-	$landings = $wpdb->get_results("SELECT * FROM $table ORDER BY `order` DESC");
-	foreach($landings as $key => $landing){
-		$posts = $wpdb->get_results("SELECT * FROM {$wpdb->postmeta} WHERE meta_key = 'spotter_id' AND  meta_value = {$landing->id}");
-		$usedBy = [];
-		foreach($posts as $post){
-			$id = intval($post->post_id);
-			$usedBy[] = array(
-				'id' => $id,
-				'title' => get_the_title($id),
-				'link' => get_permalink($id)
-			);
-		}
-		$landings[$key]->usedBy = $usedBy;
-	}
-	return $landings;
+	global $TABLE_NAME;
+	$type = $req['type'];
+	$items = $wpdb->get_results("SELECT * FROM $TABLE_NAME WHERE `type`='$type' ORDER BY `order` DESC");
+	return $items;
 }
 
 function get_item(WP_REST_Request $req){
 	global $wpdb;
+	global $TABLE_NAME;
 	$id = $req['id'];
-	$table = $wpdb->prefix . 'spotter';
-	$landing = $wpdb->get_results("SELECT * FROM $table WHERE id=$id");
+	$landing = $wpdb->get_results("SELECT * FROM $TABLE_NAME WHERE `id`='$id'");
 	if(count($landing)) {
 		$landing = $landing[0];
 		return $landing;
@@ -187,17 +178,18 @@ function get_item(WP_REST_Request $req){
 
 function add_item(WP_REST_Request $req){
 	global $wpdb;
-	$table = $wpdb->prefix . 'spotter';
+	global $TABLE_NAME;
 	$item = $req['item'];
 	$item = json_encode($item);
 	$item = json_decode($item, true);
 	$item['time'] = time();
-	$landings = $wpdb->get_results("SELECT * FROM $table ORDER BY `order` DESC LIMIT 1");
-	if($landings[0]){
-		$order = intval($landings[0]->order);
+	$type = $item['type'];
+	$items = $wpdb->get_results("SELECT * FROM $TABLE_NAME WHERE `type`='$type'	ORDER BY `order` DESC LIMIT 1");
+	if($items[0]){
+		$order = intval($items[0]->order);
 		$item['order'] = ++$order;
 	}
-	$result = $wpdb->insert($table, $item);
+	$result = $wpdb->insert($TABLE_NAME, $item);
 	$response = rest_ensure_response($result);
 	$response->set_status($result ? 200 : 400);
 	$response->set_data($result ? 'Added success' : 'Error, can\'t add it');
@@ -206,12 +198,12 @@ function add_item(WP_REST_Request $req){
 
 function edit_item(WP_REST_Request $req){
 	global $wpdb;
-	$table = $wpdb->prefix . 'spotter';
+	global $TABLE_NAME;
 	$item = $req['item'];
 	$item = json_encode($item);
 	$item = json_decode($item, true);
 	$item['time'] = time();
-	$result = $wpdb->update($table, $item, array(
+	$result = $wpdb->update($TABLE_NAME, $item, array(
 		'id' => $item['id']
 	));
 	$response = rest_ensure_response($result);
@@ -222,9 +214,9 @@ function edit_item(WP_REST_Request $req){
 
 function remove_item(WP_REST_Request $req){
 	global $wpdb;
-	$table = $wpdb->prefix . 'spotter';
+	global $TABLE_NAME;
 	$id = $req['id'];
-	$result = $wpdb->delete( $table, array( 'id' => $id ) );
+	$result = $wpdb->delete( $TABLE_NAME, array( 'id' => $id ) );
 	$response = rest_ensure_response($result);
 	$response->set_status($result ? 200 : 400);
 	$response->set_data($result ? 'Removed success' : 'Error, can\'t remove it');
@@ -233,12 +225,12 @@ function remove_item(WP_REST_Request $req){
 
 function save_items(WP_REST_Request $req){
 	global $wpdb;
-	$table = $wpdb->prefix . 'spotter';
+	global $TABLE_NAME;
 	$items = $req['items'];
 	$requests = [];
 	foreach($items as $item){
 		$requests[] = array(
-			'status' => $wpdb->update($table, array('order' => $item['order']), array('id' => $item['id'])),
+			'status' => $wpdb->update($TABLE_NAME, array('order' => $item['order']), array('id' => $item['id'])),
 			'id' => $item['id']
 		);
 	}

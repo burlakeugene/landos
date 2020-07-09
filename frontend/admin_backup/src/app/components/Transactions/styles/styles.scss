@@ -1,0 +1,118 @@
+$color-main-background: #1c1f27;
+
+$color-white: #ffffff;
+$color-black: #000000;
+
+$color-red: #ff636e;
+
+$color-menu-background: #1c1f27;
+$color-menu-active: #282a31;
+$color-menu-text: #fff;
+$color-menu-text-active: $color-white;
+
+$color-view-background: #1c1f23;
+$color-view-shadow: #171a1d;
+$color-green: #2e9a37;
+$color-ui-colored: #2e9a37;
+$color-orange: #ff9804;
+$color-red: #fd5353;
+$color-black: #000000;
+//$color-button-background: #2e9a37;
+$color-button-background: #ff8d00;
+$color-button-background-active: #4e5059;
+$color-button-text: $color-white;
+$color-nav-toggle: #35373a;
+
+$color-dashboard-wallet-background: #32343c;
+$color-dashboard-wallet-footer-border: #3f4147;
+
+$color-reload: #494d59;
+$color-reload-active: $color-ui-colored;
+
+$color-transactions-background: #26282f;
+$color-transaction-background: #42444e;
+$color-transaction-amount-text: #2e9a37;
+
+$color-border-color: #2e3249;
+$color-burger: #d0d0d0;
+$color-input: #9198a2;
+$color-input-background: #101318;
+$color-input-border: rgba(255, 255, 255, 0.1);
+.transaction {
+  .copy-button {
+    text-align: left;
+    font-weight: bold;
+  }
+  &s {
+    border-radius: 5px;
+    background-color: $color-dashboard-wallet-background;
+    padding-bottom: 1px;
+    &-title {
+      color: $color-white;
+      padding: 20px 20px 45px 20px;
+      background-color: $color-transactions-background;
+      text-transform: uppercase;
+      font-family: arial;
+      font-weight: bold;
+      font-size: 16px;
+      line-height: 1em;
+    }
+    &-empty {
+      padding: 30px 15px;
+      font-size: 16px;
+      color: $color-white;
+    }
+    &-list {
+      position: relative;
+      & > .transaction{
+          margin-top: -27px;
+      }
+    }
+    &-loader {
+      transition: all 0.3s;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(1.5);
+      opacity: 0;
+      transform-origin: 50% 50%;
+      background-color: $color-transactions-background;
+      visibility: hidden;
+      width: 100%;
+      height: calc(100% + 20px) &-inner {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      .loader-box {
+        margin: 0;
+      }
+      &__visible {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+  }
+  margin: 10px;
+  border-radius: 5px;
+  background-color: $color-transaction-background;
+  font-weight: 500;
+  font-size: 0;
+  box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.15);
+  color: $color-white;
+  &-block {
+    display: inline-block;
+    vertical-align: middle;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding: 17px;
+    font-weight: 600;
+    font-size: 14px;
+    width: calc((100% - 50px) / 3);
+    &__id {
+      width: 50px;
+    }
+  }
+}
