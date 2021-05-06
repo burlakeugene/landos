@@ -52,6 +52,6 @@
     "event-emitter": "^0.3.5",
     "html-to-draftjs": "^1.5.0",
     "react-beautiful-dnd": "^13.0.0",
-    "react-draft-wysiwyg": "^1.14.5"
+    "react-draft-wysiwyg": "^1.14.6"
   }
 }
